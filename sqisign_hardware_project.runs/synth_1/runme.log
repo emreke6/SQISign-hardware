@@ -1,0 +1,1081 @@
+
+*** Running vivado
+    with args -log modmul.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source modmul.tcl
+
+
+****** Vivado v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Fri Nov 28 15:38:47 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source modmul.tcl -notrace
+create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 1434.207 ; gain = 49.836 ; free physical = 89081 ; free virtual = 192238
+Command: read_checkpoint -auto_incremental -incremental /home/ekocer/sqisign_hardware/sqisign_hardware_project.srcs/utils_1/imports/synth_1/intmul.dcp
+INFO: [Vivado 12-5825] Read reference checkpoint from /home/ekocer/sqisign_hardware/sqisign_hardware_project.srcs/utils_1/imports/synth_1/intmul.dcp for incremental synthesis
+INFO: [Vivado 12-7989] Please ensure there are no constraint changes
+Command: synth_design -top modmul -part xc7z020clg484-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 3854176
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 1867.766 ; gain = 419.684 ; free physical = 88360 ; free virtual = 191517
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'modmul' [/home/ekocer/sqisign_hardware/src/modmul.v:5]
+INFO: [Synth 8-6157] synthesizing module 'intmul' [/home/ekocer/sqisign_hardware/src/intmul.v:24]
+INFO: [Synth 8-6155] done synthesizing module 'intmul' (0#1) [/home/ekocer/sqisign_hardware/src/intmul.v:24]
+INFO: [Synth 8-6157] synthesizing module 'modred' [/home/ekocer/sqisign_hardware/src/modred.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'modred' (0#1) [/home/ekocer/sqisign_hardware/src/modred.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'modmul' (0#1) [/home/ekocer/sqisign_hardware/src/modmul.v:5]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 1958.734 ; gain = 510.652 ; free physical = 88246 ; free virtual = 191404
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1973.578 ; gain = 525.496 ; free physical = 88246 ; free virtual = 191404
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg484-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1981.582 ; gain = 533.500 ; free physical = 88246 ; free virtual = 191404
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg484-1
+---------------------------------------------------------------------------------
+Start Preparing Guide Design
+---------------------------------------------------------------------------------
+CRITICAL WARNING: [Synth 8-6895] The reference checkpoint /home/ekocer/sqisign_hardware/sqisign_hardware_project.srcs/utils_1/imports/synth_1/intmul.dcp is not suitable for use with incremental synthesis for this design. Please regenerate the checkpoint for this design with -incremental_synth switch in the same Vivado session that synth_design has been run. Synthesis will continue with the default flow
+---------------------------------------------------------------------------------
+Finished Doing Graph Differ : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1990.488 ; gain = 542.406 ; free physical = 88243 ; free virtual = 191402
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Preparing Guide Design : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1990.488 ; gain = 542.406 ; free physical = 88243 ; free virtual = 191402
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 1998.496 ; gain = 550.414 ; free physical = 88227 ; free virtual = 191386
+---------------------------------------------------------------------------------
+
+
+Incremental Synthesis Report Summary:
+
+1. Incremental synthesis run: no
+
+   Reason for not running incremental synthesis : 
+
+
+INFO: [Synth 8-7130] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	  25 Input  510 Bit       Adders := 1     
+	   3 Input  510 Bit       Adders := 1     
+	   2 Input  510 Bit       Adders := 1     
+	   2 Input  259 Bit       Adders := 1     
+	   3 Input  256 Bit       Adders := 1     
++---Registers : 
+	              510 Bit    Registers := 7     
+	              256 Bit    Registers := 1     
+	              255 Bit    Registers := 3     
+	              254 Bit    Registers := 1     
+	               41 Bit    Registers := 165   
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+INFO: [Device 21-9227] Part: xc7z020clg484-1 does not have CEAM library.
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+DSP Report: Generating DSP p0_10, operation Mode is: A*B.
+DSP Report: operator p0_10 is absorbed into DSP p0_10.
+DSP Report: Generating DSP p1_20, operation Mode is: A*B.
+DSP Report: operator p1_20 is absorbed into DSP p1_20.
+DSP Report: Generating DSP p2_30, operation Mode is: A*B.
+DSP Report: operator p2_30 is absorbed into DSP p2_30.
+DSP Report: Generating DSP p3_40, operation Mode is: A*B.
+DSP Report: operator p3_40 is absorbed into DSP p3_40.
+DSP Report: Generating DSP p4_50, operation Mode is: A*B.
+DSP Report: operator p4_50 is absorbed into DSP p4_50.
+DSP Report: Generating DSP p5_60, operation Mode is: A*B.
+DSP Report: operator p5_60 is absorbed into DSP p5_60.
+DSP Report: Generating DSP p6_70, operation Mode is: A*B.
+DSP Report: operator p6_70 is absorbed into DSP p6_70.
+DSP Report: Generating DSP p7_80, operation Mode is: A*B.
+DSP Report: operator p7_80 is absorbed into DSP p7_80.
+DSP Report: Generating DSP p8_90, operation Mode is: A*B.
+DSP Report: operator p8_90 is absorbed into DSP p8_90.
+DSP Report: Generating DSP p9_100, operation Mode is: A*B.
+DSP Report: operator p9_100 is absorbed into DSP p9_100.
+DSP Report: Generating DSP p0_20, operation Mode is: A*B.
+DSP Report: operator p0_20 is absorbed into DSP p0_20.
+DSP Report: Generating DSP p1_30, operation Mode is: A*B.
+DSP Report: operator p1_30 is absorbed into DSP p1_30.
+DSP Report: Generating DSP p2_40, operation Mode is: A*B.
+DSP Report: operator p2_40 is absorbed into DSP p2_40.
+DSP Report: Generating DSP p3_50, operation Mode is: A*B.
+DSP Report: operator p3_50 is absorbed into DSP p3_50.
+DSP Report: Generating DSP p4_60, operation Mode is: A*B.
+DSP Report: operator p4_60 is absorbed into DSP p4_60.
+DSP Report: Generating DSP p5_70, operation Mode is: A*B.
+DSP Report: operator p5_70 is absorbed into DSP p5_70.
+DSP Report: Generating DSP p6_80, operation Mode is: A*B.
+DSP Report: operator p6_80 is absorbed into DSP p6_80.
+DSP Report: Generating DSP p7_90, operation Mode is: A*B.
+DSP Report: operator p7_90 is absorbed into DSP p7_90.
+DSP Report: Generating DSP p8_100, operation Mode is: A*B.
+DSP Report: operator p8_100 is absorbed into DSP p8_100.
+DSP Report: Generating DSP p0_30, operation Mode is: A*B.
+DSP Report: operator p0_30 is absorbed into DSP p0_30.
+DSP Report: Generating DSP p1_40, operation Mode is: A*B.
+DSP Report: operator p1_40 is absorbed into DSP p1_40.
+DSP Report: Generating DSP p2_50, operation Mode is: A*B.
+DSP Report: operator p2_50 is absorbed into DSP p2_50.
+DSP Report: Generating DSP p3_60, operation Mode is: A*B.
+DSP Report: operator p3_60 is absorbed into DSP p3_60.
+DSP Report: Generating DSP p4_70, operation Mode is: A*B.
+DSP Report: operator p4_70 is absorbed into DSP p4_70.
+DSP Report: Generating DSP p5_80, operation Mode is: A*B.
+DSP Report: operator p5_80 is absorbed into DSP p5_80.
+DSP Report: Generating DSP p6_90, operation Mode is: A*B.
+DSP Report: operator p6_90 is absorbed into DSP p6_90.
+DSP Report: Generating DSP p7_100, operation Mode is: A*B.
+DSP Report: operator p7_100 is absorbed into DSP p7_100.
+DSP Report: Generating DSP p0_40, operation Mode is: A*B.
+DSP Report: operator p0_40 is absorbed into DSP p0_40.
+DSP Report: Generating DSP p1_50, operation Mode is: A*B.
+DSP Report: operator p1_50 is absorbed into DSP p1_50.
+DSP Report: Generating DSP p2_60, operation Mode is: A*B.
+DSP Report: operator p2_60 is absorbed into DSP p2_60.
+DSP Report: Generating DSP p3_70, operation Mode is: A*B.
+DSP Report: operator p3_70 is absorbed into DSP p3_70.
+DSP Report: Generating DSP p4_80, operation Mode is: A*B.
+DSP Report: operator p4_80 is absorbed into DSP p4_80.
+DSP Report: Generating DSP p5_90, operation Mode is: A*B.
+DSP Report: operator p5_90 is absorbed into DSP p5_90.
+DSP Report: Generating DSP p6_100, operation Mode is: A*B.
+DSP Report: operator p6_100 is absorbed into DSP p6_100.
+DSP Report: Generating DSP p0_50, operation Mode is: A*B.
+DSP Report: operator p0_50 is absorbed into DSP p0_50.
+DSP Report: Generating DSP p1_60, operation Mode is: A*B.
+DSP Report: operator p1_60 is absorbed into DSP p1_60.
+DSP Report: Generating DSP p2_70, operation Mode is: A*B.
+DSP Report: operator p2_70 is absorbed into DSP p2_70.
+DSP Report: Generating DSP p3_80, operation Mode is: A*B.
+DSP Report: operator p3_80 is absorbed into DSP p3_80.
+DSP Report: Generating DSP p4_90, operation Mode is: A*B.
+DSP Report: operator p4_90 is absorbed into DSP p4_90.
+DSP Report: Generating DSP p5_100, operation Mode is: A*B.
+DSP Report: operator p5_100 is absorbed into DSP p5_100.
+DSP Report: Generating DSP p0_60, operation Mode is: A*B.
+DSP Report: operator p0_60 is absorbed into DSP p0_60.
+DSP Report: Generating DSP p1_70, operation Mode is: A*B.
+DSP Report: operator p1_70 is absorbed into DSP p1_70.
+DSP Report: Generating DSP p2_80, operation Mode is: A*B.
+DSP Report: operator p2_80 is absorbed into DSP p2_80.
+DSP Report: Generating DSP p3_90, operation Mode is: A*B.
+DSP Report: operator p3_90 is absorbed into DSP p3_90.
+DSP Report: Generating DSP p4_100, operation Mode is: A*B.
+DSP Report: operator p4_100 is absorbed into DSP p4_100.
+DSP Report: Generating DSP p0_70, operation Mode is: A*B.
+DSP Report: operator p0_70 is absorbed into DSP p0_70.
+DSP Report: Generating DSP p1_80, operation Mode is: A*B.
+DSP Report: operator p1_80 is absorbed into DSP p1_80.
+DSP Report: Generating DSP p2_90, operation Mode is: A*B.
+DSP Report: operator p2_90 is absorbed into DSP p2_90.
+DSP Report: Generating DSP p3_100, operation Mode is: A*B.
+DSP Report: operator p3_100 is absorbed into DSP p3_100.
+DSP Report: Generating DSP p0_80, operation Mode is: A*B.
+DSP Report: operator p0_80 is absorbed into DSP p0_80.
+DSP Report: Generating DSP p1_90, operation Mode is: A*B.
+DSP Report: operator p1_90 is absorbed into DSP p1_90.
+DSP Report: Generating DSP p2_100, operation Mode is: A*B.
+DSP Report: operator p2_100 is absorbed into DSP p2_100.
+DSP Report: Generating DSP p0_90, operation Mode is: A*B.
+DSP Report: operator p0_90 is absorbed into DSP p0_90.
+DSP Report: Generating DSP p1_100, operation Mode is: A*B.
+DSP Report: operator p1_100 is absorbed into DSP p1_100.
+DSP Report: Generating DSP p0_100, operation Mode is: A*B.
+DSP Report: operator p0_100 is absorbed into DSP p0_100.
+DSP Report: Generating DSP p1_00, operation Mode is: A*B.
+DSP Report: operator p1_00 is absorbed into DSP p1_00.
+DSP Report: Generating DSP p2_10, operation Mode is: A*B.
+DSP Report: operator p2_10 is absorbed into DSP p2_10.
+DSP Report: Generating DSP p3_20, operation Mode is: A*B.
+DSP Report: operator p3_20 is absorbed into DSP p3_20.
+DSP Report: Generating DSP p4_30, operation Mode is: A*B.
+DSP Report: operator p4_30 is absorbed into DSP p4_30.
+DSP Report: Generating DSP p5_40, operation Mode is: A*B.
+DSP Report: operator p5_40 is absorbed into DSP p5_40.
+DSP Report: Generating DSP p6_50, operation Mode is: A*B.
+DSP Report: operator p6_50 is absorbed into DSP p6_50.
+DSP Report: Generating DSP p7_60, operation Mode is: A*B.
+DSP Report: operator p7_60 is absorbed into DSP p7_60.
+DSP Report: Generating DSP p8_70, operation Mode is: A*B.
+DSP Report: operator p8_70 is absorbed into DSP p8_70.
+DSP Report: Generating DSP p9_80, operation Mode is: A*B.
+DSP Report: operator p9_80 is absorbed into DSP p9_80.
+DSP Report: Generating DSP p10_90, operation Mode is: A*B.
+DSP Report: operator p10_90 is absorbed into DSP p10_90.
+DSP Report: Generating DSP p11_100, operation Mode is: A*B.
+DSP Report: operator p11_100 is absorbed into DSP p11_100.
+DSP Report: Generating DSP p2_00, operation Mode is: A*B.
+DSP Report: operator p2_00 is absorbed into DSP p2_00.
+DSP Report: Generating DSP p3_10, operation Mode is: A*B.
+DSP Report: operator p3_10 is absorbed into DSP p3_10.
+DSP Report: Generating DSP p4_20, operation Mode is: A*B.
+DSP Report: operator p4_20 is absorbed into DSP p4_20.
+DSP Report: Generating DSP p5_30, operation Mode is: A*B.
+DSP Report: operator p5_30 is absorbed into DSP p5_30.
+DSP Report: Generating DSP p6_40, operation Mode is: A*B.
+DSP Report: operator p6_40 is absorbed into DSP p6_40.
+DSP Report: Generating DSP p7_50, operation Mode is: A*B.
+DSP Report: operator p7_50 is absorbed into DSP p7_50.
+DSP Report: Generating DSP p8_60, operation Mode is: A*B.
+DSP Report: operator p8_60 is absorbed into DSP p8_60.
+DSP Report: Generating DSP p9_70, operation Mode is: A*B.
+DSP Report: operator p9_70 is absorbed into DSP p9_70.
+DSP Report: Generating DSP p10_80, operation Mode is: A*B.
+DSP Report: operator p10_80 is absorbed into DSP p10_80.
+DSP Report: Generating DSP p11_90, operation Mode is: A*B.
+DSP Report: operator p11_90 is absorbed into DSP p11_90.
+DSP Report: Generating DSP p12_100, operation Mode is: A*B.
+DSP Report: operator p12_100 is absorbed into DSP p12_100.
+DSP Report: Generating DSP p3_00, operation Mode is: A*B.
+DSP Report: operator p3_00 is absorbed into DSP p3_00.
+DSP Report: Generating DSP p4_10, operation Mode is: A*B.
+DSP Report: operator p4_10 is absorbed into DSP p4_10.
+DSP Report: Generating DSP p5_20, operation Mode is: A*B.
+DSP Report: operator p5_20 is absorbed into DSP p5_20.
+DSP Report: Generating DSP p6_30, operation Mode is: A*B.
+DSP Report: operator p6_30 is absorbed into DSP p6_30.
+DSP Report: Generating DSP p7_40, operation Mode is: A*B.
+DSP Report: operator p7_40 is absorbed into DSP p7_40.
+DSP Report: Generating DSP p8_50, operation Mode is: A*B.
+DSP Report: operator p8_50 is absorbed into DSP p8_50.
+DSP Report: Generating DSP p9_60, operation Mode is: A*B.
+DSP Report: operator p9_60 is absorbed into DSP p9_60.
+DSP Report: Generating DSP p10_70, operation Mode is: A*B.
+DSP Report: operator p10_70 is absorbed into DSP p10_70.
+DSP Report: Generating DSP p11_80, operation Mode is: A*B.
+DSP Report: operator p11_80 is absorbed into DSP p11_80.
+DSP Report: Generating DSP p12_90, operation Mode is: A*B.
+DSP Report: operator p12_90 is absorbed into DSP p12_90.
+DSP Report: Generating DSP p13_100, operation Mode is: A*B.
+DSP Report: operator p13_100 is absorbed into DSP p13_100.
+DSP Report: Generating DSP p4_00, operation Mode is: A*B.
+DSP Report: operator p4_00 is absorbed into DSP p4_00.
+DSP Report: Generating DSP p5_10, operation Mode is: A*B.
+DSP Report: operator p5_10 is absorbed into DSP p5_10.
+DSP Report: Generating DSP p6_20, operation Mode is: A*B.
+DSP Report: operator p6_20 is absorbed into DSP p6_20.
+DSP Report: Generating DSP p7_30, operation Mode is: A*B.
+DSP Report: operator p7_30 is absorbed into DSP p7_30.
+DSP Report: Generating DSP p8_40, operation Mode is: A*B.
+DSP Report: operator p8_40 is absorbed into DSP p8_40.
+DSP Report: Generating DSP p9_50, operation Mode is: A*B.
+DSP Report: operator p9_50 is absorbed into DSP p9_50.
+DSP Report: Generating DSP p10_60, operation Mode is: A*B.
+DSP Report: operator p10_60 is absorbed into DSP p10_60.
+DSP Report: Generating DSP p11_70, operation Mode is: A*B.
+DSP Report: operator p11_70 is absorbed into DSP p11_70.
+DSP Report: Generating DSP p12_80, operation Mode is: A*B.
+DSP Report: operator p12_80 is absorbed into DSP p12_80.
+DSP Report: Generating DSP p13_90, operation Mode is: A*B.
+DSP Report: operator p13_90 is absorbed into DSP p13_90.
+DSP Report: Generating DSP p14_100, operation Mode is: A*B.
+DSP Report: operator p14_100 is absorbed into DSP p14_100.
+DSP Report: Generating DSP p5_00, operation Mode is: A*B.
+DSP Report: operator p5_00 is absorbed into DSP p5_00.
+DSP Report: Generating DSP p6_10, operation Mode is: A*B.
+DSP Report: operator p6_10 is absorbed into DSP p6_10.
+DSP Report: Generating DSP p7_20, operation Mode is: A*B.
+DSP Report: operator p7_20 is absorbed into DSP p7_20.
+DSP Report: Generating DSP p8_30, operation Mode is: A*B.
+DSP Report: operator p8_30 is absorbed into DSP p8_30.
+DSP Report: Generating DSP p9_40, operation Mode is: A*B.
+DSP Report: operator p9_40 is absorbed into DSP p9_40.
+DSP Report: Generating DSP p10_50, operation Mode is: A*B.
+DSP Report: operator p10_50 is absorbed into DSP p10_50.
+DSP Report: Generating DSP p11_60, operation Mode is: A*B.
+DSP Report: operator p11_60 is absorbed into DSP p11_60.
+DSP Report: Generating DSP p12_70, operation Mode is: A*B.
+DSP Report: operator p12_70 is absorbed into DSP p12_70.
+DSP Report: Generating DSP p13_80, operation Mode is: A*B.
+DSP Report: operator p13_80 is absorbed into DSP p13_80.
+DSP Report: Generating DSP p14_90, operation Mode is: A*B.
+DSP Report: operator p14_90 is absorbed into DSP p14_90.
+DSP Report: Generating DSP p6_00, operation Mode is: A*B.
+DSP Report: operator p6_00 is absorbed into DSP p6_00.
+DSP Report: Generating DSP p7_10, operation Mode is: A*B.
+DSP Report: operator p7_10 is absorbed into DSP p7_10.
+DSP Report: Generating DSP p8_20, operation Mode is: A*B.
+DSP Report: operator p8_20 is absorbed into DSP p8_20.
+DSP Report: Generating DSP p9_30, operation Mode is: A*B.
+DSP Report: operator p9_30 is absorbed into DSP p9_30.
+DSP Report: Generating DSP p10_40, operation Mode is: A*B.
+DSP Report: operator p10_40 is absorbed into DSP p10_40.
+DSP Report: Generating DSP p11_50, operation Mode is: A*B.
+DSP Report: operator p11_50 is absorbed into DSP p11_50.
+DSP Report: Generating DSP p12_60, operation Mode is: A*B.
+DSP Report: operator p12_60 is absorbed into DSP p12_60.
+DSP Report: Generating DSP p13_70, operation Mode is: A*B.
+DSP Report: operator p13_70 is absorbed into DSP p13_70.
+DSP Report: Generating DSP p14_80, operation Mode is: A*B.
+DSP Report: operator p14_80 is absorbed into DSP p14_80.
+DSP Report: Generating DSP p7_00, operation Mode is: A*B.
+DSP Report: operator p7_00 is absorbed into DSP p7_00.
+DSP Report: Generating DSP p8_10, operation Mode is: A*B.
+DSP Report: operator p8_10 is absorbed into DSP p8_10.
+DSP Report: Generating DSP p9_20, operation Mode is: A*B.
+DSP Report: operator p9_20 is absorbed into DSP p9_20.
+DSP Report: Generating DSP p10_30, operation Mode is: A*B.
+DSP Report: operator p10_30 is absorbed into DSP p10_30.
+DSP Report: Generating DSP p11_40, operation Mode is: A*B.
+DSP Report: operator p11_40 is absorbed into DSP p11_40.
+DSP Report: Generating DSP p12_50, operation Mode is: A*B.
+DSP Report: operator p12_50 is absorbed into DSP p12_50.
+DSP Report: Generating DSP p13_60, operation Mode is: A*B.
+DSP Report: operator p13_60 is absorbed into DSP p13_60.
+DSP Report: Generating DSP p14_70, operation Mode is: A*B.
+DSP Report: operator p14_70 is absorbed into DSP p14_70.
+DSP Report: Generating DSP p8_00, operation Mode is: A*B.
+DSP Report: operator p8_00 is absorbed into DSP p8_00.
+DSP Report: Generating DSP p9_10, operation Mode is: A*B.
+DSP Report: operator p9_10 is absorbed into DSP p9_10.
+DSP Report: Generating DSP p10_20, operation Mode is: A*B.
+DSP Report: operator p10_20 is absorbed into DSP p10_20.
+DSP Report: Generating DSP p11_30, operation Mode is: A*B.
+DSP Report: operator p11_30 is absorbed into DSP p11_30.
+DSP Report: Generating DSP p12_40, operation Mode is: A*B.
+DSP Report: operator p12_40 is absorbed into DSP p12_40.
+DSP Report: Generating DSP p13_50, operation Mode is: A*B.
+DSP Report: operator p13_50 is absorbed into DSP p13_50.
+DSP Report: Generating DSP p14_60, operation Mode is: A*B.
+DSP Report: operator p14_60 is absorbed into DSP p14_60.
+DSP Report: Generating DSP p9_00, operation Mode is: A*B.
+DSP Report: operator p9_00 is absorbed into DSP p9_00.
+DSP Report: Generating DSP p10_10, operation Mode is: A*B.
+DSP Report: operator p10_10 is absorbed into DSP p10_10.
+DSP Report: Generating DSP p11_20, operation Mode is: A*B.
+DSP Report: operator p11_20 is absorbed into DSP p11_20.
+DSP Report: Generating DSP p12_30, operation Mode is: A*B.
+DSP Report: operator p12_30 is absorbed into DSP p12_30.
+DSP Report: Generating DSP p13_40, operation Mode is: A*B.
+DSP Report: operator p13_40 is absorbed into DSP p13_40.
+DSP Report: Generating DSP p14_50, operation Mode is: A*B.
+DSP Report: operator p14_50 is absorbed into DSP p14_50.
+DSP Report: Generating DSP p10_00, operation Mode is: A*B.
+DSP Report: operator p10_00 is absorbed into DSP p10_00.
+DSP Report: Generating DSP p11_10, operation Mode is: A*B.
+DSP Report: operator p11_10 is absorbed into DSP p11_10.
+DSP Report: Generating DSP p12_20, operation Mode is: A*B.
+DSP Report: operator p12_20 is absorbed into DSP p12_20.
+DSP Report: Generating DSP p13_30, operation Mode is: A*B.
+DSP Report: operator p13_30 is absorbed into DSP p13_30.
+DSP Report: Generating DSP p14_40, operation Mode is: A*B.
+DSP Report: operator p14_40 is absorbed into DSP p14_40.
+DSP Report: Generating DSP p11_00, operation Mode is: A*B.
+DSP Report: operator p11_00 is absorbed into DSP p11_00.
+DSP Report: Generating DSP p12_10, operation Mode is: A*B.
+DSP Report: operator p12_10 is absorbed into DSP p12_10.
+DSP Report: Generating DSP p13_20, operation Mode is: A*B.
+DSP Report: operator p13_20 is absorbed into DSP p13_20.
+DSP Report: Generating DSP p14_30, operation Mode is: A*B.
+DSP Report: operator p14_30 is absorbed into DSP p14_30.
+DSP Report: Generating DSP p12_00, operation Mode is: A*B.
+DSP Report: operator p12_00 is absorbed into DSP p12_00.
+DSP Report: Generating DSP p13_10, operation Mode is: A*B.
+DSP Report: operator p13_10 is absorbed into DSP p13_10.
+DSP Report: Generating DSP p14_20, operation Mode is: A*B.
+DSP Report: operator p14_20 is absorbed into DSP p14_20.
+DSP Report: Generating DSP p13_00, operation Mode is: A*B.
+DSP Report: operator p13_00 is absorbed into DSP p13_00.
+DSP Report: Generating DSP p14_10, operation Mode is: A*B.
+DSP Report: operator p14_10 is absorbed into DSP p14_10.
+DSP Report: Generating DSP p14_00, operation Mode is: A*B.
+DSP Report: operator p14_00 is absorbed into DSP p14_00.
+DSP Report: Generating DSP p0_00, operation Mode is: A*B.
+DSP Report: operator p0_00 is absorbed into DSP p0_00.
+DSP Report: Generating DSP p1_10, operation Mode is: A*B.
+DSP Report: operator p1_10 is absorbed into DSP p1_10.
+DSP Report: Generating DSP p2_20, operation Mode is: A*B.
+DSP Report: operator p2_20 is absorbed into DSP p2_20.
+DSP Report: Generating DSP p3_30, operation Mode is: A*B.
+DSP Report: operator p3_30 is absorbed into DSP p3_30.
+DSP Report: Generating DSP p4_40, operation Mode is: A*B.
+DSP Report: operator p4_40 is absorbed into DSP p4_40.
+DSP Report: Generating DSP p5_50, operation Mode is: A*B.
+DSP Report: operator p5_50 is absorbed into DSP p5_50.
+DSP Report: Generating DSP p6_60, operation Mode is: A*B.
+DSP Report: operator p6_60 is absorbed into DSP p6_60.
+DSP Report: Generating DSP p7_70, operation Mode is: A*B.
+DSP Report: operator p7_70 is absorbed into DSP p7_70.
+DSP Report: Generating DSP p8_80, operation Mode is: A*B.
+DSP Report: operator p8_80 is absorbed into DSP p8_80.
+DSP Report: Generating DSP p9_90, operation Mode is: A*B.
+DSP Report: operator p9_90 is absorbed into DSP p9_90.
+DSP Report: Generating DSP p10_100, operation Mode is: A*B.
+DSP Report: operator p10_100 is absorbed into DSP p10_100.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:26 ; elapsed = 00:00:25 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+ Sort Area is intmul__GB1 p0_00_9c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_10_0 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_20_c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_30_15 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_40_1d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_50_24 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_60_2a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_70_2f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_80_33 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_90_36 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_00_8d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_10_88 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_20_82 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_30_7b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_40_73 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_50_6a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_60_60 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_70_56 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_80_4c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_90_42 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_00_92 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_10_8e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_20_89 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_30_83 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_40_7c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_50_74 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_60_6b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_70_61 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_80_57 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_90_4d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_00_96 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_10_93 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_20_8f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_30_8a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_40_84 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_50_7d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_60_75 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_70_6c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_80_62 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_90_58 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_00_99 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_10_97 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_20_94 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_30_90 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_40_8b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_50_85 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_60_7e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_70_76 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_80_6d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_90_63 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_00_9b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_10_9a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_20_98 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_30_95 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_40_91 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_50_8c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_60_86 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_70_7f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_80_77 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_90_6e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_00_39 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_10_9d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_20_2 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_30_d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_40_16 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_50_1e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_60_25 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_70_2b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_80_30 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_90_34 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_00_44 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_10_3a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_20_9e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_30_3 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_40_e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_50_17 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_60_1f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_70_26 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_80_2c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_90_31 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_00_4f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_10_45 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_20_3b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_30_9f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_40_4 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_50_f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_60_18 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_70_20 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_80_27 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_90_2d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_00_5a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_10_50 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_20_46 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_30_3c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_40_a0 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_50_5 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_60_10 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_70_19 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_80_21 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_90_28 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_00_65 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_10_5b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_20_51 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_30_47 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_40_3d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_50_a1 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_60_6 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_70_11 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_80_1a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_90_22 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_00_6f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_10_66 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_20_5c : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_30_52 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_40_48 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_50_3e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_60_a2 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_70_7 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_80_12 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_90_1b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_00_78 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_10_70 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_20_67 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_30_5d : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_40_53 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_50_49 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_60_3f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_70_a3 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_80_8 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_90_13 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_00_80 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_10_79 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_20_71 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_30_68 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_40_5e : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_50_54 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_60_4a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_70_40 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_80_a4 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_90_9 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_00_87 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_10_81 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_20_7a : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_30_72 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_40_69 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_50_5f : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_60_55 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_70_4b : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_80_41 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_90_a5 : 0 0 : 2881 2881 : Used 1 time 100
+ Sort Area is intmul__GB1 p0_100_38 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p10_100_a6 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p11_100_43 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p12_100_4e : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p13_100_59 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p14_100_64 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p1_100_37 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p2_100_35 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p3_100_32 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p4_100_2e : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p5_100_29 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p6_100_23 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p7_100_1c : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p8_100_14 : 0 0 : 1839 1839 : Used 1 time 100
+ Sort Area is intmul__GB1 p9_100_a : 0 0 : 1839 1839 : Used 1 time 100
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|intmul      | A*B         | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:00:26 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:30 ; elapsed = 00:00:29 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:35 ; elapsed = 00:00:34 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:35 ; elapsed = 00:00:34 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:35 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:35 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87983 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:35 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:36 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 24     | 17     | -      | -      | 41     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|intmul      | (A*B)'      | 17     | 15     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 1    | 
++------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |BUFG    |     1|
+|2     |CARRY4  |  1504|
+|3     |DSP48E1 |   165|
+|4     |LUT1    |   493|
+|5     |LUT2    |  3699|
+|6     |LUT3    |  1781|
+|7     |LUT4    |  1649|
+|8     |LUT5    |  2276|
+|9     |LUT6    |  2003|
+|10    |FDCE    |  2975|
+|11    |FDRE    |  1528|
+|12    |IBUF    |   512|
+|13    |OBUF    |   255|
++------+--------+------+
+
+Report Instance Areas: 
++------+----------------+-------+------+
+|      |Instance        |Module |Cells |
++------+----------------+-------+------+
+|1     |top             |       | 18841|
+|2     |  intmul_design |intmul | 10605|
+|3     |  modred_design |modred |  6029|
++------+----------------+-------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:36 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 1 critical warnings and 1 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:36 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.449 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+Synthesis Optimization Complete : Time (s): cpu = 00:00:36 ; elapsed = 00:00:35 . Memory (MB): peak = 2217.457 ; gain = 769.367 ; free physical = 87984 ; free virtual = 191157
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.14 ; elapsed = 00:00:00.14 . Memory (MB): peak = 2217.457 ; gain = 0.000 ; free physical = 88272 ; free virtual = 191446
+INFO: [Netlist 29-17] Analyzing 1669 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2335.289 ; gain = 0.000 ; free physical = 88236 ; free virtual = 191409
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: 97359afb
+INFO: [Common 17-83] Releasing license: Synthesis
+22 Infos, 1 Warnings, 1 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:44 ; elapsed = 00:00:40 . Memory (MB): peak = 2335.289 ; gain = 896.113 ; free physical = 88235 ; free virtual = 191409
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1870.697; main = 1568.608; forked = 401.645
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 3242.527; main = 2335.293; forked = 1025.074
+INFO: [runtcl-6] Synthesis results are not added to the cache due to CRITICAL_WARNING
+Write ShapeDB Complete: Time (s): cpu = 00:00:00.16 ; elapsed = 00:00:00.05 . Memory (MB): peak = 2359.301 ; gain = 0.000 ; free physical = 88233 ; free virtual = 191409
+INFO: [Common 17-1381] The checkpoint '/home/ekocer/sqisign_hardware/sqisign_hardware_project.runs/synth_1/modmul.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file modmul_utilization_synth.rpt -pb modmul_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Fri Nov 28 15:39:40 2025...

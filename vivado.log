@@ -1,0 +1,88 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Fri Nov 28 17:39:30 2025
+# Process ID: 3855215
+# Current directory: /home/ekocer/sqisign_hardware
+# Command line: vivado -mode batch -source new.tcl
+# Log file: /home/ekocer/sqisign_hardware/vivado.log
+# Journal file: /home/ekocer/sqisign_hardware/vivado.jou
+# Running On        :flipflop
+# Platform          :Ubuntu
+# Operating System  :Ubuntu 22.04.4 LTS
+# Processor Detail  :Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz
+# CPU Frequency     :2100.000 MHz
+# CPU Physical cores:16
+# CPU Logical cores :32
+# Host memory       :202421 MB
+# Swap memory       :8589 MB
+# Total Virtual     :211011 MB
+# Available Virtual :203245 MB
+#-----------------------------------------------------------
+source new.tcl
+# set fp [open "src/modmul.v" r]
+# set data [read $fp]
+# close $fp
+# set lines [split $data "\n"]
+# set line_no 1
+# foreach line $lines {
+#     puts "[format "%4d" $line_no]: $line"
+#     incr line_no
+# }
+   1: 
+   2: `timescale 1ns / 1ps
+   3: 
+   4: 
+   5: module modmul(input clk,rst,
+   6:               input [254:0] A,
+   7:               input [254:0] B,
+   8:               output reg [254:0] D);
+   9: 
+  10: 
+  11: reg [254:0] A_reg, B_reg;
+  12: reg [509:0] INTMUL_RES_reg;
+  13: wire [509:0] INTMUL_RES;
+  14: wire [254:0] MODRED_RES; 
+  15:  
+  16: always @(posedge clk or posedge rst) begin
+  17:     if(rst) begin
+  18:         A_reg <= 0;
+  19:         B_reg <= 0;
+  20:     end
+  21:     else begin
+  22:         A_reg <= A;
+  23:         B_reg <= B;
+  24:     end
+  25: end
+  26: 
+  27: intmul intmul_design (
+  28:     .clk(clk),
+  29:     .rst(rst),
+  30:     .A(A_reg),
+  31:     .B(B_reg),
+  32:     .D(INTMUL_RES)
+  33: );
+  34: 
+  35: always @(posedge clk ) begin
+  36:     INTMUL_RES_reg <= INTMUL_RES;
+  37: end
+  38: 
+  39:  modred modred_design (
+  40:     .clk(clk),
+  41:     .rst(rst),
+  42:     .A(INTMUL_RES_reg),
+  43:     .D(MODRED_RES)
+  44: );
+  45: 
+  46: 
+  47: always @(posedge clk) begin
+  48:     D <= MODRED_RES;
+  49: end
+  50:           
+  51: endmodule
+  52: 
+  53: 
+  54: 
+INFO: [Common 17-206] Exiting Vivado at Fri Nov 28 17:39:34 2025...

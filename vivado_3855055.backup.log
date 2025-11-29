@@ -1,0 +1,91 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Fri Nov 28 17:32:05 2025
+# Process ID: 3855055
+# Current directory: /home/ekocer/sqisign_hardware
+# Command line: vivado -mode tcl sqisign_hardware_project.xpr
+# Log file: /home/ekocer/sqisign_hardware/vivado.log
+# Journal file: /home/ekocer/sqisign_hardware/vivado.jou
+# Running On        :flipflop
+# Platform          :Ubuntu
+# Operating System  :Ubuntu 22.04.4 LTS
+# Processor Detail  :Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz
+# CPU Frequency     :2100.000 MHz
+# CPU Physical cores:16
+# CPU Logical cores :32
+# Host memory       :202421 MB
+# Swap memory       :8589 MB
+# Total Virtual     :211011 MB
+# Available Virtual :203245 MB
+#-----------------------------------------------------------
+open_project sqisign_hardware_project.xpr
+INFO: [filemgmt 56-3] Default IP Output Path : Could not find the directory '/home/ekocer/sqisign_hardware/sqisign_hardware_project.gen/sources_1'.
+Scanning sources...
+Finished scanning sources
+open_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 1436.172 ; gain = 50.805 ; free physical = 90213 ; free virtual = 193461
+launch_simulation
+Command: launch_simulation 
+INFO: [Vivado 12-12493] Simulation top is 'modmul_tb'
+INFO: [Vivado 12-5682] Launching behavioral simulation in '/home/ekocer/sqisign_hardware/sqisign_hardware_project.sim/sim_1/behav/xsim'
+INFO: [SIM-utils-51] Simulation object is 'sim_1'
+INFO: [SIM-utils-72] Using boost library from '/tools/Xilinx/Vivado/2024.1/tps/boost_1_72_0'
+INFO: [SIM-utils-54] Inspecting design source files for 'modmul_tb' in fileset 'sim_1'...
+INFO: [USF-XSim-97] Finding global include files...
+INFO: [USF-XSim-98] Fetching design files from 'sim_1'...
+INFO: [USF-XSim-2] XSim::Compile design
+INFO: [USF-XSim-61] Executing 'COMPILE and ANALYZE' step in '/home/ekocer/sqisign_hardware/sqisign_hardware_project.sim/sim_1/behav/xsim'
+xvlog --incr --relax -prj modmul_tb_vlog.prj
+Waiting for jobs to finish...
+No pending jobs, compilation finished.
+INFO: [USF-XSim-69] 'compile' step finished in '1' seconds
+INFO: [USF-XSim-3] XSim::Elaborate design
+INFO: [USF-XSim-61] Executing 'ELABORATE' step in '/home/ekocer/sqisign_hardware/sqisign_hardware_project.sim/sim_1/behav/xsim'
+xelab --incr --debug typical --relax --mt 8 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot modmul_tb_behav xil_defaultlib.modmul_tb xil_defaultlib.glbl -log elaborate.log
+Vivado Simulator v2024.1
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: /tools/Xilinx/Vivado/2024.1/bin/unwrapped/lnx64.o/xelab --incr --debug typical --relax --mt 8 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot modmul_tb_behav xil_defaultlib.modmul_tb xil_defaultlib.glbl -log elaborate.log 
+Using 8 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+INFO: [XSIM 43-4323] No Change in HDL. Linking previously generated obj files to create kernel
+INFO: [USF-XSim-69] 'elaborate' step finished in '1' seconds
+INFO: [USF-XSim-4] XSim::Simulate design
+INFO: [USF-XSim-61] Executing 'SIMULATE' step in '/home/ekocer/sqisign_hardware/sqisign_hardware_project.sim/sim_1/behav/xsim'
+INFO: [USF-XSim-98] *** Running xsim
+   with args "modmul_tb_behav -key {Behavioral:sim_1:Functional:modmul_tb} -tclbatch {modmul_tb.tcl} -log {simulate.log}"
+INFO: [USF-XSim-8] Loading simulator feature
+Time resolution is 1 ps
+source modmul_tb.tcl
+# set curr_wave [current_wave_config]
+# if { [string length $curr_wave] == 0 } {
+#   if { [llength [get_objects]] > 0} {
+#     add_wave /
+#     set_property needs_save false [current_wave_config]
+#   } else {
+#      send_msg_id Add_Wave-1 WARNING "No top level signals found. Simulator will start without a wave window. If you want to open a wave window go to 'File->New Waveform Configuration' or type 'create_wave_config' in the TCL console."
+#   }
+# }
+# run 1000ns
+==== STARTING modmul TESTBENCH ====
+[T1] A=034e0b04174d94060cacc82cd69eee90e724fe81f8a43b14ccd8904ef5a965f9, B=021754f0e4c2308796e42245b04d70960032fedb935aa9e8a2c71c03d90a6223, D=034f6359d42e6d96cccea4e509b41008becfd04006875248962245eaad58f111
+CONTROL 1
+[T1] A=034e0b04174d94060cacc82cd69eee90e724fe81f8a43b14ccd8904ef5a965f9, B=021754f0e4c2308796e42245b04d70960032fedb935aa9e8a2c71c03d90a6223, D=00a4c8350640e09d342354218e3674d7cd69d04839a367e864cd3b139b5d9427
+CONTROL 1
+==== FINISHED fp_mul TESTBENCH ====
+$stop called at time : 142 ns : File "/home/ekocer/sqisign_hardware/src_tb/modmul_tb.v" Line 93
+INFO: [USF-XSim-96] XSim completed. Design snapshot 'modmul_tb_behav' loaded.
+INFO: [USF-XSim-97] XSim simulation ran for 1000ns
+launch_simulation: Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 1518.336 ; gain = 82.164 ; free physical = 90177 ; free virtual = 193424
+read_verilog src/modmul.v 
+WARNING: [filemgmt 56-12] File '/home/ekocer/sqisign_hardware/src/modmul.v' cannot be added to the project because it already exists in the project, skipping this file
+read_verilog src/modmul.v
+WARNING: [filemgmt 56-12] File '/home/ekocer/sqisign_hardware/src/modmul.v' cannot be added to the project because it already exists in the project, skipping this file
+touch new.tcl
+WARNING: [Common 17-259] Unknown Tcl command 'touch new.tcl' sending command to the OS shell for execution. It is recommended to use 'exec' to send the command to the OS shell.
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Nov 28 17:38:18 2025...

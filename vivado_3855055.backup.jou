@@ -1,0 +1,29 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Fri Nov 28 17:32:05 2025
+# Process ID: 3855055
+# Current directory: /home/ekocer/sqisign_hardware
+# Command line: vivado -mode tcl sqisign_hardware_project.xpr
+# Log file: /home/ekocer/sqisign_hardware/vivado.log
+# Journal file: /home/ekocer/sqisign_hardware/vivado.jou
+# Running On        :flipflop
+# Platform          :Ubuntu
+# Operating System  :Ubuntu 22.04.4 LTS
+# Processor Detail  :Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz
+# CPU Frequency     :2100.000 MHz
+# CPU Physical cores:16
+# CPU Logical cores :32
+# Host memory       :202421 MB
+# Swap memory       :8589 MB
+# Total Virtual     :211011 MB
+# Available Virtual :203245 MB
+#-----------------------------------------------------------
+open_project sqisign_hardware_project.xpr
+launch_simulation
+source modmul_tb.tcl
+read_verilog src/modmul.v 
+read_verilog src/modmul.v
+touch new.tcl
