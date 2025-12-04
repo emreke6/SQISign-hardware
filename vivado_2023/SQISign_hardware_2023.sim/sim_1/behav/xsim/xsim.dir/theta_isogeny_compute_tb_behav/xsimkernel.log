@@ -1,0 +1,7 @@
+Running: xsim.dir/theta_isogeny_compute_tb_behav/xsimk -simmode gui -wdb theta_isogeny_compute_tb_behav.wdb -simrunnum 0 -socket 38923
+Design successfully loaded
+Design Loading Memory Usage: 28156 KB (Peak: 28164 KB)
+Design Loading CPU Usage: 20 ms
+Simulation completed
+Simulation Memory Usage: 110680 KB (Peak: 167424 KB)
+Simulation CPU Usage: 70 ms

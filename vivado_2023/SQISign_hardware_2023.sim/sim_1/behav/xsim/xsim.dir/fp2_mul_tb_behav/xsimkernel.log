@@ -1,0 +1,7 @@
+Running: xsim.dir/fp2_mul_tb_behav/xsimk -simmode gui -wdb fp2_mul_tb_behav.wdb -simrunnum 0 -socket 46691
+Design successfully loaded
+Design Loading Memory Usage: 24268 KB (Peak: 24276 KB)
+Design Loading CPU Usage: 10 ms
+Simulation completed
+Simulation Memory Usage: 106004 KB (Peak: 163536 KB)
+Simulation CPU Usage: 10 ms

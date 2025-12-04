@@ -1,6 +1,8 @@
 
 
 from dataclasses import dataclass, field
+from typing import List, Tuple
+
 
 q   = pow(2,248)*5 - 1 # 64-bit: prime q
 R   = pow(2,256) # 2^256
@@ -310,6 +312,33 @@ def hadamard_sqisign(in1): # input is a ThetaPoint
     return out1
 
 
+# def fp2_sqr(y: Fp2) -> Fp2:
+#     """
+#     Computes x = y^2 in the quadratic extension field Fp2.
+
+#     Args:
+#         y (Fp2): input element (with fields re, im)
+#     Returns:
+#         Fp2: output squared element
+#     """
+
+#     # sum = y.re + y.im
+#     sum_ = fp_add_sqr(y.re, y.im)
+
+#     # diff = y.re - y.im
+#     diff = fp_sub_sqr(y.re, y.im)
+
+#     # x.im = 2 * (y.re * y.im)
+#     im_part = fp_add_sqr(y.re, y.re)  # multiply by 2 via addition
+#     im_part = fp_mul_fp_sqr(im_part, y.im)
+    
+
+#     # x.re = (y.re + y.im) * (y.re - y.im)
+#     re_part = fp_mul_fp_sqr(sum_, diff)
+
+#     # Return new Fp2 element
+#     return Fp2(re=re_part, im=im_part)
+
 def fp2_sqr(y: Fp2) -> Fp2:
     """
     Computes x = y^2 in the quadratic extension field Fp2.
@@ -321,21 +350,22 @@ def fp2_sqr(y: Fp2) -> Fp2:
     """
 
     # sum = y.re + y.im
-    sum_ = fp_add_sqr(y.re, y.im)
+    sum_ = fp_add(y.re, y.im)
 
     # diff = y.re - y.im
-    diff = fp_sub_sqr(y.re, y.im)
+    diff = fp_sub(y.re, y.im)
 
     # x.im = 2 * (y.re * y.im)
-    im_part = fp_add_sqr(y.re, y.re)  # multiply by 2 via addition
-    im_part = fp_mul_fp_sqr(im_part, y.im)
+    im_part = fp_mul(y.re, y.im)
+    im_part = fp_add(im_part, im_part)  # multiply by 2 via addition
     
-
     # x.re = (y.re + y.im) * (y.re - y.im)
-    re_part = fp_mul_fp_sqr(sum_, diff)
+    re_part = fp_mul(sum_, diff)
 
     # Return new Fp2 element
     return Fp2(re=re_part, im=im_part)
+
+
 
 def fp2_sqr_c0(y: Fp2) -> Fp2:
     # sum = y.re + y.im
@@ -558,6 +588,8 @@ def theta_isogeny_compute(
     t1 = fp2_mul(TT1.x, TT2.y) # 2 add 3 sub 3 mul
     t2 = fp2_mul(TT1.y, TT2.x) # 2 add 3 sub 3 mul
 
+    t3 = fp2_mul(TT2.z, TT2.t) # 2 add 3 sub 3 mul
+
     # Compute outputs (handle absent z/t if needed)
     out_x = fp2_mul(TT2.x, t1) # 2 add 3 sub 3 mul
     out_y = fp2_mul(TT2.y, t2) # 2 add 3 sub 3 mul
@@ -568,7 +600,7 @@ def theta_isogeny_compute(
     null_point = ThetaPoint(x=out_x, y=out_y, z=out_z, t=out_t)
 
 
-    t3 = fp2_mul(TT2.z, TT2.t) # 2 add 3 sub 3 mul
+    
     pre_x = fp2_mul(t3, TT1.y) # 2 add 3 sub 3 mul
     pre_y = fp2_mul(t3, TT1.x) # 2 add 3 sub 3 mul
     pre_z = fp2_copy(out_t)
@@ -578,7 +610,7 @@ def theta_isogeny_compute(
     out.precomputation = precomp_point
 
 
-    codomain = ThetaStructure(
+    codomain_new = ThetaStructure(
         null_point=null_point,
         precomputation=False,
         XYZ0=Fp2(0, 0),
@@ -590,6 +622,8 @@ def theta_isogeny_compute(
         xzt0=Fp2(0, 0),
         xyt0=Fp2(0, 0),
     )
+
+    out.codomain = codomain_new
 
     if verify:
         # (1) TT1.x * out.precomputation.x == TT1.y * out.precomputation.y
@@ -660,15 +694,15 @@ def theta_isogeny_eval(phi: ThetaIsogeny, P: ThetaPoint):
 def theta_chain_compute_impl_remaining_steps(
     n: int,
     theta: ThetaStructure,
-    thetaQ1: list[ThetaPoint],
-    thetaQ2: list[ThetaPoint],
-    todo: list[int],
+    thetaQ1: List[ThetaPoint],
+    thetaQ2: List[ThetaPoint],
+    todo: List[int],
     current: int,
     space: int,
     numP: int,
-    pts: list[ThetaPoint],
+    pts: List[ThetaPoint],
     verify: bool
-    ) -> tuple[ThetaStructure, list[ThetaPoint], list[ThetaPoint], list[ThetaPoint]]:
+    ) -> Tuple[ThetaStructure, List[ThetaPoint], List[ThetaPoint], List[ThetaPoint]]:
     """
     Python translation of the '_theta_chain_compute_impl' main loop:
         for (unsigned i = 1; current >= 0 && todo[current]; ++i)

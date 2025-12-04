@@ -1,0 +1,7 @@
+Running: xsim.dir/fp2_ptwise_sq_tb_behav/xsimk -simmode gui -wdb fp2_ptwise_sq_tb_behav.wdb -simrunnum 0 -socket 33441
+Design successfully loaded
+Design Loading Memory Usage: 24632 KB (Peak: 24632 KB)
+Design Loading CPU Usage: 10 ms
+Simulation completed
+Simulation Memory Usage: 106508 KB (Peak: 163900 KB)
+Simulation CPU Usage: 20 ms

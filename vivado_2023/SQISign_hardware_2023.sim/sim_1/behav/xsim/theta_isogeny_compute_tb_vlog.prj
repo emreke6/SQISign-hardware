@@ -1,0 +1,23 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../../src/fp2_add.v" \
+"../../../../../src/fp2_hadamard.v" \
+"../../../../../src/fp2_mul.v" \
+"../../../../../src/fp2_ptwise_sq.v" \
+"../../../../../src/fp2_sqr.v" \
+"../../../../../src/fp2_sub.v" \
+"../../../../../src/fp2_to_squared_theta.v" \
+"../../../../../src/fp_add.v" \
+"../../../../../src/fp_sub.v" \
+"../../../../../src/intmul.v" \
+"../../../../../src/modmul.v" \
+"../../../../../src/modred.v" \
+"../../../../../src/shiftreg.v" \
+"../../../../../src/theta_isogeny_compute.v" \
+"../../../../../src_tb/theta_isogeny_compute_tb.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

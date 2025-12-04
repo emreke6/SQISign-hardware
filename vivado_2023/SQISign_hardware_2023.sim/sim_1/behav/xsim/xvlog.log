@@ -1,0 +1,31 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_add.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_add
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_hadamard.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_hadamard
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_mul.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_mul
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_ptwise_sq.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_ptwise_sq
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_sqr.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_sqr
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_sub.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_sub
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp2_to_squared_theta.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp2_to_squared_theta
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp_add.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp_add
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/fp_sub.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp_sub
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/intmul.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module intmul
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/modmul.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fp_mul
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/modred.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module modred
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/shiftreg.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module shiftreg
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src/theta_isogeny_compute.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module theta_isogeny_compute
+INFO: [VRFC 10-2263] Analyzing Verilog file "/home/cisechw/SQISign-hardware/src_tb/theta_isogeny_compute_tb.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module theta_isogeny_compute_tb
+WARNING: [VRFC 10-2096] empty statement in sequential block [/home/cisechw/SQISign-hardware/src_tb/theta_isogeny_compute_tb.v:83]

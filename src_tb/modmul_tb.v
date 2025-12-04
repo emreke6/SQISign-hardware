@@ -16,7 +16,7 @@ module modmul_tb;
     // ----------------------------------------------------
     // Instantiate DUT
     // ----------------------------------------------------
-    modmul dut (
+    fp_mul dut (
         .clk(clk),
         .rst(rst),
         .A(A),
@@ -62,22 +62,17 @@ module modmul_tb;
         
         
 
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
+        repeat(dut.LATENCY_MUL - 1) begin
+            @(posedge clk);
+        end;
 
-        #2;
+        #1;
         RES = 255'h34f6359d42e6d96cccea4e509b41008becfd04006875248962245eaad58f111;
         $display("[T1] A=%h, B=%h, D=%h", A, B, D);
         $display("CONTROL %d", D == RES);
 
         @(posedge clk);
-        #2;
+        #1;
         RES = 255'ha4c8350640e09d342354218e3674d7cd69d04839a367e864cd3b139b5d9427;
         $display("[T1] A=%h, B=%h, D=%h", A, B, D);
         $display("CONTROL %d", D == RES);
