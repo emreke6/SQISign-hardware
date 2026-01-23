@@ -9,6 +9,8 @@ R   = pow(2,256) # 2^256
 Rv  = pow(R, -1, q) # 64-bit: R^-1 (mod q)
 mu  = (-pow(q,-1,R)) % R # 64-bit: (−q)^−1 (mod R)
 
+ONE = 0x0100000000000000000000000000000000000000000000000000000000000033
+
 # ---------- Base Fp2 ----------
 @dataclass
 class Fp2:
@@ -177,6 +179,25 @@ def fp_is_zero(a: int, q: int) -> bool:
         a % q == 0
     """
     return (a % q) == 0
+
+def fp2_set_zero() -> Fp2:
+    return Fp2(0, 0)
+
+def fp2_set_one() -> Fp2:
+    return Fp2(re=1, im=0)
+
+def fp_neg(a: int) -> int:
+    res = 2*q - a
+    if res < pow(2,251):
+        return res
+    else:
+        return res - q
+
+
+def fp2_is_one(a: Fp2) -> bool:
+    return a.re == ONE and a.im == 0
+
+
 
 
 def fp2_is_zero(a: Fp2, q: int) -> bool:
