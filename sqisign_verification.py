@@ -1,103 +1,9 @@
 from arith_ops import *
 from typing import Optional
+from ec import *
+from basis import *
+from xisog import *
 
-# Parameters / types
-NWORDS_ORDER = 4                  # number of 64-bit limbs
-RADIX = 64                        # limb size in bits
-SQIsign_response_length = 253
-HD_extra_torsion = 2
-TORSION_EVEN_POWER = 248
-
-
-MASK64 = (1 << 64) - 1
-
-
-@dataclass
-class ECPoint:
-    x: Fp2
-    z: Fp2
-
-@dataclass
-class ECCurve:
-    A: Fp2
-    C: Fp2
-    A24: Optional[ECPoint]
-    is_A24_computed_and_normalized: bool
-
-@dataclass
-class ECBasis:
-    P: ECPoint
-    Q: ECPoint
-    PmQ: ECPoint
-
-
-@dataclass
-class ECIsogEven:
-    curve: ECCurve
-    kernel: ECPoint
-    length: int
-
-@dataclass
-class PublicKey:
-    curve: ECCurve
-    hint_pk: int
-
-def multiple_mp_shiftl_int(x: int, shift: int) -> int:
-    """Equivalent of multiple_mp_shiftl but using Python int"""
-    return x << shift
-
-
-def mp_compare_int(a: int, b: int) -> int:
-    if a > b: return 1
-    if a < b: return -1
-    return 0
-
-def ec_point_init() -> ECPoint:
-    return ECPoint(
-        x=fp2_set_one(),
-        z=fp2_set_zero(),
-    )
-
-def ec_curve_init() -> ECCurve:
-    return ECCurve(
-        A=fp2_set_zero(),
-        C=fp2_set_one(),
-        A24=ec_point_init(),
-        is_A24_computed_and_normalized=False,
-    )
-
-
-def ec_curve_verify_A(A: Fp2) -> bool:
-    # t = 2
-    t = Fp2(2, 0)
-    if fp2_is_equal(A, t):
-        return False
-
-    # t = -2
-    t = Fp2(-2, 0)
-    if fp2_is_equal(A, t):
-        return False
-
-    return True
-
-def ec_curve_init_from_A(A: Fp2) -> ECCurve | None:
-    E = ec_curve_init()
-    E.A = fp2_copy(A)
-
-    if not ec_curve_verify_A(A):
-        return None
-
-    return E
-
-@dataclass
-class Signature:
-    E_aux_A: Fp2
-    mat_Bchall_can_to_B_chall: list   # 2x2 matrix of ints
-    backtracking: int
-    two_resp_length: int
-    hint_aux: int
-    hint_chall: int
-    chall_coeff: int
 
 
 
@@ -116,60 +22,6 @@ def check_canonical_basis_change_matrix(sig: Signature) -> int:
 
 
 
-def ec_curve_verify_A(A: Fp2) -> bool:
-    """
-    Verify the Montgomery coefficient A is valid (A^2 - 4 != 0)
-    Equivalent C logic:
-      - reject if A ==  2
-      - reject if A == -2
-      - otherwise accept
-    """
-
-    # t = 1
-    t = fp2_set_one()
-
-    # t = 2
-    t = fp2_add(t, t)
-
-    # if A == 2: reject
-    if fp2_is_equal(A, t):
-        return False
-
-    # t = -2
-    t = Fp2(re=fp_neg(t.re), im=t.im)
-
-    # if A == -2: reject
-    if fp2_is_equal(A, t):
-        return False
-
-    return True
-
-
-def copy_curve(dst: ECCurve, src: ECCurve):
-    dst.A = src.A
-    dst.C = src.C
-    dst.A24 = src.A24
-    dst.is_A24_computed_and_normalized = src.is_A24_computed_and_normalized
-
-
-def ec_curve_to_basis_2f_from_hint(basis, curve, f, hint) -> bool:
-    # STUB: always succeed
-    return True
-
-
-def ec_ladder3pt(kernel, chall_coeff, P, Q, PmQ, curve) -> bool:
-    # STUB: always succeed
-    return True
-
-
-def ec_dbl_iter(out, n, inp, curve):
-    # STUB: do nothing
-    pass
-
-
-def ec_eval_even(E_chall, phi_chall, _, __) -> int:
-    # STUB: return 0 means success in C
-    return 0
 
 
 def compute_challenge_verify(
@@ -199,49 +51,205 @@ def compute_challenge_verify(
     )
 
     # copy_curve(&phi_chall.curve, Epk);
-    copy_curve(phi_chall.curve, Epk)
+    phi_chall.curve = copy_curve(Epk)
 
     # phi_chall.length = TORSION_EVEN_POWER - sig->backtracking;
     phi_chall.length = TORSION_EVEN_POWER - sig.backtracking
 
     # Compute the basis from the supplied hint
-    if not ec_curve_to_basis_2f_from_hint(
+    ret1, phi_chall.curve = ec_curve_to_basis_2f_from_hint(
         bas_EA,
         phi_chall.curve,
         TORSION_EVEN_POWER,
         hint_pk,
-    ):
+    )
+    if not ret1:
         return False
 
     # recovering the exact challenge
-    if not ec_ladder3pt(
-        phi_chall.kernel,
+    ret, phi_chall.kernel = ec_ladder3pt(
         sig.chall_coeff,
         bas_EA.P,
         bas_EA.Q,
         bas_EA.PmQ,
-        phi_chall.curve,
-    ):
+        phi_chall.curve
+    )
+    if not ret:
         return False
 
     # Double the kernel until it has the correct order
-    ec_dbl_iter(
-        phi_chall.kernel,
-        sig.backtracking,
-        phi_chall.kernel,
-        phi_chall.curve,
-    )
+    ec_dbl_iter(phi_chall.kernel, sig.backtracking, phi_chall.kernel, phi_chall.curve)
 
     # Compute the codomain
-    copy_curve(E_chall, phi_chall.curve)
+    E_chall = copy_curve(phi_chall.curve)
 
-    if ec_eval_even(E_chall, phi_chall, None, 0):
+    ret_ec_eval, new_E_chall = ec_eval_even(E_chall, phi_chall, None, 0)
+
+    E_chall = new_E_chall
+
+    if ret_ec_eval:
         return False
 
-    return True
+    return True, E_chall
 
 
+def ec_eval_even_strategy(
+    curve_in: ECCurve,
+    points: list[ECPoint],
+    len_points: int,
+    kernel: ECPoint,
+    isog_len: int
+) -> int:
+    """
+    In-place equivalent of the C ec_eval_even_strategy.
+    Mutates `curve` and `points`.
+    Returns 0 on success, -1 on failure.
+    """
 
+    # Normalize A24 in place
+    curve_norm = ec_curve_normalize_A24(curve_in)
+    curve = ec_curve_init()
+    curve.A = curve_norm.A
+    curve.C = curve_norm.C
+    curve.A24 = curve_norm.A24
+    curve.is_A24_computed_and_normalized = curve_norm.is_A24_computed_and_normalized
+
+    # Local copy of A24
+    A24 = ec_point_init()
+    A24 = copy_ec_point(curve.A24)
+
+    # Compute stack space
+    space = 1
+    i = 1
+    while i < isog_len:
+        space += 1
+        i *= 2
+
+    # Stack of kernel splits and remaining orders
+    splits = [ec_point_init() for i in range(space)]
+    todo = [0 for i in range(space)] 
+
+    splits[0] = copy_point(kernel)
+    todo[0] = isog_len
+    current = 0
+
+    # Chain of 4-isogenies
+    for j in range(isog_len // 2):
+        assert current >= 0
+        assert todo[current] >= 1
+
+        # Find next point of order 4
+        ctr = 0
+        while todo[current] != 2:
+            assert todo[current] >= 3
+            current += 1
+            assert current < space
+
+            splits[current] = copy_point(splits[current - 1])
+
+            num_dbls = (todo[current - 1] // 4) * 2 + (todo[current - 1] % 2)
+            todo[current] = todo[current - 1] - num_dbls
+
+            
+            while num_dbls > 0:
+                splits[current] = xDBL_A24(splits[current], A24, False)
+                num_dbls -= 1
+
+        if j == 0:
+            assert fp2_is_one(A24.z)
+            if not ec_is_four_torsion(splits[current], curve):
+                return -1
+            
+            T = xDBL_A24(splits[current], A24, False)
+            if fp2_is_zero(T.x):
+                return -1
+        else:
+            assert todo[current] == 2
+
+        kps4 = ECKPS4()
+        # Evaluate 4-isogeny
+        kps4, A24  = xisog_4(A24, splits[current])
+
+        # Update splits in place
+        new_splits = xeval_4(splits, current, kps4)
+        for i in range(current):
+            splits[i] = new_splits[i]
+
+        for i in range(current):
+            todo[i] -= 2
+
+        # Update points in place
+        # points = xeval_4(points, len_points, kps4)
+        # new_points = xeval_4(points, len_points, kps4)
+        # for i in range(len_points):
+        #     points[i] = new_points[i]
+
+        current -= 1
+
+    # Final 2-isogeny if needed
+    if isog_len % 2:
+        if isog_len == 1 and not ec_is_two_torsion(splits[0], curve):
+            return -1
+
+        if fp2_is_zero(splits[0].x):
+            return -1
+
+        kps2 = xisog_2(A24, splits[0])
+        updated_points = xeval_2(points, points, len_points, kps2)
+        for i in range(len_points):
+            points[i] = updated_points[i]
+
+    # Convert A24 back to (A:C) in place
+    curve_ac = A24_to_AC(curve, A24)
+    curve.A = curve_ac.A
+    curve.C = curve_ac.C
+    curve.A24 = curve_ac.A24
+    curve.is_A24_computed_and_normalized = False
+
+    return 0, curve
+
+def ec_eval_even(
+    image: ECCurve,
+    phi: ECIsogEven,
+    points: list[ECPoint],
+    len_points: int
+) -> int:
+    """
+    In-place equivalent of C ec_eval_even.
+    """
+
+    curve_copy = copy_curve(phi.curve)
+    image.A = curve_copy.A
+    image.C = curve_copy.C
+    image.A24 = curve_copy.A24
+    image.is_A24_computed_and_normalized = curve_copy.is_A24_computed_and_normalized
+
+    print_curve("image_curve: ",image)
+    print("points_bef_ec_eval: ", points)
+    print("len_points: ", len_points)
+    print_hex_point("phi.kernel: ", phi.kernel)
+    print("phi.length: ", phi.length)
+
+    ret1, new_curve = ec_eval_even_strategy(
+        image,
+        points,
+        len_points,
+        phi.kernel,
+        phi.length
+    )
+
+    image = new_curve
+
+    return ret1, new_curve
+
+
+def challenge_and_aux_basis_verify(B_chall_can: ECBasis, B_aux_can: ECBasis, E_chall: ECCurve, E_aux: ECCurve, sig: Signature, pow_dim2_deg_resp: int):
+    
+    ret1, B_chall_can = ec_curve_to_basis_2f_from_hint(B_chall_can, E_chall, TORSION_EVEN_POWER, sig.hint_chall)
+     
+    if not ret1:
+        return 0
+    return 0
 
 
 def protocols_verify(sig: Signature, pk: PublicKey, m: bytes, l: int) -> bool:
@@ -267,8 +275,32 @@ def protocols_verify(sig: Signature, pk: PublicKey, m: bytes, l: int) -> bool:
     assert fp2_is_one(pk.curve.C)
     assert not pk.curve.is_A24_computed_and_normalized
 
-    E_chall = ec_curve_init
-    compute_challenge_verify(E_chall, sig_obj, pk.curve, pk.hint_pk)
+    E_chall = ec_curve_init()
+    ret_cmpt, E_chall_new = compute_challenge_verify(E_chall, sig_obj, pk.curve, pk.hint_pk)
+
+    E_chall = E_chall_new
+
+    if not ret_cmpt:
+        return False
+    
+
+    B_aux_can = ECBasis(
+        P=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+        Q=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+        PmQ=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+    )
+    B_chall_can =  ECBasis(
+        P=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+        Q=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+        PmQ=ECPoint(Fp2(0, 0), Fp2(0, 0)),
+    )
+    ret_chal_verify = challenge_and_aux_basis_verify(
+            B_chall_can, B_aux_can,
+            E_chall, E_aux,
+            sig, pow_dim2_deg_resp)
+    
+    if not ret_chal_verify:
+        return 0;
 
     return True
 
@@ -370,6 +402,18 @@ if __name__ == "__main__":
 
 
 
+    aa = 0x06c2fdd4e6afefe00a2016bd332e9fe05a86d915518f9d99424cdeda39a0bf1e
+    bb = 0x05641ade0fb56e5f1059a05e3a212a3cd5f518c1985df1b26ddcf09d1e328cec
+
+    print(aa)
+    print(bb)
+
+    print(0x003b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13d)
+
+    print(0xf6276276276276276276276276276276276276276276276276276276276276)
+
+    print( 434916200560833065743580923259795326972919113077075435845318449548952560246*240/1000/104379888134599935778459421582350878473500587138498104602876427891748614461)
 
 
 
+    
