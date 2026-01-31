@@ -1,7 +1,7 @@
 
 
 from dataclasses import dataclass, field
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 q   = pow(2,248)*5 - 1 # 64-bit: prime q
@@ -10,6 +10,9 @@ Rv  = pow(R, -1, q) # 64-bit: R^-1 (mod q)
 mu  = (-pow(q,-1,R)) % R # 64-bit: (−q)^−1 (mod R)
 
 ONE = 0x0100000000000000000000000000000000000000000000000000000000000033
+
+
+R_INV = pow(R, -1, q)   # modular inverse
 
 # ---------- Base Fp2 ----------
 @dataclass
@@ -130,6 +133,30 @@ def modsub_sqisign(a, b, bool1):
 
     return r1
 
+MASK64  = (1 << 64) - 1
+MASK256 = (1 << 256) - 1
+
+def modadd_sqisign_exact(a, b, p):
+    # force 256-bit arithmetic
+    c = (a + b) & MASK256
+
+    for _ in range(2):
+        # extract top limb (bits 192..255)
+        r11 = (c >> 192) & MASK64
+
+        # extract overflow bits (top 5 bits)
+        overflow = r11 >> 59
+
+        # create mask: 0 or -1 (64-bit)
+        mask = (-overflow) & MASK64
+
+        # masked subtraction (limb-wise)
+        c = (c - (mask | (mask << 64) | (mask << 128) |
+                 ((p >> 192) & MASK64) * (mask >> 63) << 192)
+            ) & MASK256
+
+    return c
+
 def modadd_sqisign(a, b, bool1):
     c = a + b
     prev = a + b
@@ -146,10 +173,14 @@ def modadd_sqisign(a, b, bool1):
     # mask = (-overflow) & ((1 << 256) - 1)
     # c = (c - (mask & q)) & ((1 << 256) - 1)
 
-    if c >= pow(2, 251):
+    c_mask = c >> (192+59)
+
+    if c_mask != 0:
         c = c - q
 
-    if c >= pow(2, 251):
+    c_mask = c >> (192+59)
+
+    if c_mask != 0:
         c = c - q
 
     if bool1:
@@ -184,7 +215,42 @@ def fp2_set_zero() -> Fp2:
     return Fp2(0, 0)
 
 def fp2_set_one() -> Fp2:
-    return Fp2(re=1, im=0)
+    return Fp2(re=ONE, im=0)
+
+def fp_set_one() -> int:
+    return ONE
+
+def fp_half(a: int) -> int:
+    """
+    Functional equivalent of gf5248_half.
+    Treated as integer division by 2.
+    """
+    if a % 2 == 1:
+        a = ((a >> 1) + ((q+1)>>1)) % q
+    else:
+        a = (a >> 1) % q
+    return a
+
+def fp2_half(y: Fp2) -> Fp2:
+    """
+    Functional equivalent of gf5248_half.
+    Treated as integer division by 2.
+    """
+    x = Fp2(re=0, im=0)
+    x.re = fp_half(y.re)
+    x.im = fp_half(y.im)
+    return x
+
+def fp2_add_one(y: Fp2) -> Fp2:
+    """
+    Functional equivalent of gf5248_half.
+    Treated as integer division by 2.
+    """
+    x = Fp2(re=0, im=0)
+    x.re = fp_add(y.re, ONE)
+    x.im = fp_copy(y.im)
+    return x
+
 
 def fp_neg(a: int) -> int:
     res = 2*q - a
@@ -194,13 +260,74 @@ def fp_neg(a: int) -> int:
         return res - q
 
 
+def fp2_neg(y: Fp2) -> Fp2:
+    x = Fp2(re=0, im=0)
+    x.re = fp_neg(y.re)
+    x.im = fp_neg(y.im)
+    return x
+
+
 def fp2_is_one(a: Fp2) -> bool:
-    return a.re == ONE and a.im == 0
+    return a.re % q == ONE and a.im == 0
+
+def fp_set_small(a: int)->int:
+    return a * pow(2,256,q) % q
+
+def fp_mul_small(a: int, n: int) -> int:
+    """
+    Functional equivalent of fp_mul_small / gf5248_mul_small.
+    Treated as regular integer multiplication.
+    """
+    return (a * n) % q
+
+def fp2_mul_small(y, n):
+    """
+    Functional equivalent of fp2_mul_small.
+    Returns y * n in Fp2.
+    """
+    return Fp2(
+        re=fp_mul_small(y.re, n),
+        im=fp_mul_small(y.im, n),
+    )
+
+def legendre_symbol(a: int) -> int:
+    """
+    Returns:
+        0  if a == 0 (mod p)
+        1  if a is a quadratic residue mod p
+       -1  if a is a non-residue mod p
+    """
+    a %= q
+    if a == 0:
+        return 0
+
+    # Euler's criterion
+    ls = pow(a, (q - 1) // 2, q)
+    return 1 if ls == 1 else -1
+
+def fp_is_square(a: int) -> bool:
+    """
+    Python equivalent of fp_is_square.
+    Returns True if a == 0 or a is a quadratic residue mod p.
+    """
+    ls = legendre_symbol(a)
+    return ls >= 0
+
+def fp2_is_square(x: Fp2) -> Fp2:
+    """
+    Functional equivalent of C fp2_is_square.
+
+    Returns True if x is a square in Fp2 (using norm test).
+    """
+
+    t0 = fp_mul(x.re, x.re)
+    t1 = fp_mul(x.im, x.im)
+    t0 = fp2_add(t0, t1)
+
+    return fp_is_square(t0)
 
 
-
-
-def fp2_is_zero(a: Fp2, q: int) -> bool:
+def fp2_is_zero(a: Fp2) -> bool:
     """
     Check if an Fp2 element (a.re, a.im) is zero.
     Returns True if both components are 0 mod q.
@@ -208,6 +335,9 @@ def fp2_is_zero(a: Fp2, q: int) -> bool:
     return fp_is_zero(a.re, q) and fp_is_zero(a.im, q)
 
 def fp2_copy(in1):
+    return in1
+
+def fp_copy(in1):
     return in1
 
 def fp2_is_equal(a: Fp2, b: Fp2) -> bool:
@@ -225,6 +355,38 @@ def fp2_sub(a, b):
     fp_sub_im = fp_sub(a.im, b.im)
 
     return Fp2(re=fp_sub_re, im=fp_sub_im)
+
+def fp2_inv(x):
+    """
+    Functional equivalent of C fp2_inv using fp_* operations.
+
+    Computes:
+        (a + i b)^(-1) = (a - i b) / (a^2 + b^2)
+    """
+
+    # t0 = a^2
+    t0 = fp_mul(x.re, x.re)
+
+    # t1 = b^2
+    t1 = fp_mul(x.im, x.im)
+
+    # t0 = a^2 + b^2
+    t0 = fp_add(t0, t1)
+
+    # t0 = 1 / (a^2 + b^2)
+    t0 = fp_inv(t0)
+
+    # re = a * t0
+    re = fp_mul(x.re, t0)
+
+    # im = -b * t0
+    im = fp_mul(x.im, t0)
+    im = fp_neg(im)
+
+    return Fp2(re=re, im=im)
+
+def fp_inv(a:int)->int:
+    return pow(a,-1,q) * pow(2, 256, q) % q
 
 
 def fp_mul(a, b):
@@ -333,6 +495,152 @@ def hadamard_sqisign(in1): # input is a ThetaPoint
     return out1
 
 
+
+# def mod_sqrt(a, p):
+#     """Tonelli-Shanks: returns x s.t. x^2 = a mod p, or None"""
+#     if a == 0:
+#         return 0
+#     if pow(a, (p - 1) // 2, p) != 1:
+#         return None  # no square root
+
+#     if p % 4 == 3:
+#         return pow(a, (p + 1) // 4, p)
+
+#     # Factor p-1 = q * 2^s
+#     q = p - 1
+#     s = 0
+#     while q % 2 == 0:
+#         q //= 2
+#         s += 1
+
+#     # Find z a quadratic non-residue
+#     z = 2
+#     while pow(z, (p - 1) // 2, p) != p - 1:
+#         z += 1
+
+#     c = pow(z, q, p)
+#     x = pow(a, (q + 1) // 2, p)
+#     t = pow(a, q, p)
+#     m = s
+
+#     while t != 1:
+#         i = 1
+#         temp = pow(t, 2, p)
+#         while temp != 1:
+#             temp = pow(temp, 2, p)
+#             i += 1
+
+#         b = pow(c, 2 ** (m - i - 1), p)
+#         x = (x * b) % p
+#         t = (t * b * b) % p
+#         c = (b * b) % p
+#         m = i
+
+#     return x
+
+# def fp_sqrt(a: Fp2)->Fp2:
+#     return mod_sqrt(a, q)
+
+def fp_sqr(x: Fp2)->Fp2:
+    return fp_mul(x ,x)
+
+# def fp_exp3div4(a: int, p: int) -> int:
+#     return pow(a, (p - 3) // 4, p)
+
+# def gf5248_select(a0: int, a1: int, ctl: int) -> int:
+#     """
+#     ctl must be either 0 or 0xFFFFFFFF
+#     """
+#     return a0 if ctl == 0 else a1
+
+# def fp_select(a0: int, a1: int, ctl: int) -> int:
+#     return gf5248_select(a0, a1, ctl)
+
+# def gf5248_encode(a_mont: int) -> bytes:
+#     """
+#     a_mont is in Montgomery domain: a_mont = a * R mod Q
+#     Output matches C gf5248_encode exactly.
+#     """
+#     # Montgomery reduction: a = a_mont * R^{-1} mod Q
+#     a = (a_mont * R_INV) % q
+
+#     # Encode as 32-byte little-endian
+#     return a.to_bytes(32, byteorder="little")
+
+
+
+# def fp_encode(a: int) -> bytes:
+#     return gf5248_encode(a)
+
+# def fp2_sqrt(a: Fp2)->Fp2:
+#     """
+#     In-place square root in Fp2.
+#     a is an Fp2 object with fields a.re, a.im
+#     """
+
+#     # Temporary variables
+#     x0 = a.re
+#     x1 = a.im
+#     t0 = a.re
+#     t1 = a.im
+
+#     # x0 = delta = sqrt(a0^2 + a1^2)
+#     x0 = fp_sqr(a.re)
+#     x1 = fp_sqr(a.im)
+#     x0 = fp_add(x0, x1)
+#     x0 = fp_sqrt(x0)
+
+#     # If a1 == 0, force delta = a0
+#     x0 = fp_select(x0, a.re, fp_is_zero(a.im, q))
+
+#     # x0 = delta + a0, t0 = 2*x0
+#     x0 = fp_add(x0, a.re)
+#     t0 = fp_add(x0, x0)
+
+#     # x1 = t0^((p-3)//4)
+#     x1 = t0
+#     x1 = fp_exp3div4(x1, q)
+
+#     # x0 = x0 * x1
+#     # x1 = x1 * a1
+#     # t1 = (2*x0)^2
+#     x0 = fp_mul(x0, x1)
+#     x1 = fp_mul(x1, a.im)
+#     t1 = fp_add(x0, x0)
+#     t1 = fp_sqr(t1)
+
+#     # If t1 == t0:
+#     #   return x0 + x1*i
+#     # else:
+#     #   return x1 - x0*i
+#     t0_check = fp_sub(t0, t1)
+#     f = fp_is_zero(t0_check, q)
+
+#     t1_neg = fp_neg(x0)
+#     t0_tmp = x1
+
+#     t0 = fp_select(t0_tmp, x0, f)
+#     t1 = fp_select(t1_neg, x1, f)
+
+#     # Canonical sign fixing
+#     t0_is_zero = fp_is_zero(t0, q)
+
+#     t0_bytes = fp_encode(t0)
+#     t0_is_odd = - (t0_bytes[0] & 1)
+
+#     t1_bytes = fp_encode(t1)
+#     t1_is_odd = - (t1_bytes[0] & 1)
+
+#     negate_output = t0_is_odd | (t0_is_zero & t1_is_odd)
+
+#     # Conditional negation
+#     a_new = Fp2(re=0, im=0)
+#     a_new.re = fp_select(t0, fp_neg(t0), negate_output)
+#     a_new.im = fp_select(t1, fp_neg(t1), negate_output)
+
+#     return a_new
+
+
 # def fp2_sqr(y: Fp2) -> Fp2:
 #     """
 #     Computes x = y^2 in the quadratic extension field Fp2.
@@ -376,10 +684,10 @@ def fp2_sqr(y: Fp2) -> Fp2:
     # diff = y.re - y.im
     diff = fp_sub(y.re, y.im)
 
-    # x.im = 2 * (y.re * y.im)
-    im_part = fp_mul(y.re, y.im)
-    im_part = fp_add(im_part, im_part)  # multiply by 2 via addition
-    
+    # x.im = (2* y.re) * y.im
+    re_mul2 = fp_add(y.re, y.re)  # multiply by 2 via addition
+    im_part = fp_mul(re_mul2, y.im)
+   
     # x.re = (y.re + y.im) * (y.re - y.im)
     re_part = fp_mul(sum_, diff)
 
@@ -403,11 +711,20 @@ def fp2_sqr_c0(y: Fp2) -> Fp2:
 
 def fp2_sqr_c1(y: Fp2) -> Fp2:
 
-    im_part = fp_add_sqr(y.re, y.re)  # multiply by 2 via addition
+    im_part = fp_add(y.re, y.re)  # multiply by 2 via addition
     im_part = fp_mul_fp_sqr(im_part, y.im)
+    
 
     # Return new Fp2 element
     return im_part
+
+
+
+def fp2_sqr_new(a: Fp2)->Fp2:
+    re_part = fp2_sqr_c0(a)
+    im_part = fp2_sqr_c1(a)
+
+    return Fp2(re=re_part, im=im_part)
 
 
 def pointwise_square(tp_in):
@@ -792,3 +1109,60 @@ def theta_chain_compute_impl_remaining_steps(
     return theta, pts, thetaQ1, thetaQ2
 
 
+
+
+# Parameters / types
+NWORDS_ORDER = 4                  # number of 64-bit limbs
+RADIX = 64                        # limb size in bits
+SQIsign_response_length = 253
+HD_extra_torsion = 2
+TORSION_EVEN_POWER = 248
+
+BASIS_E0_PX = Fp2(re=0x024e4cc21a236db3f59a8d87ad37c0da8c8505452654b56d052b795624001810, im=0x026ef8a8622cda106a9bbbb814c83cbd5cc5efa9da1d4a82cd9d72c0cb907df8)
+BASIS_E0_QX = Fp2(im=0x04ff74b2ac0249ecc63b049a9c3405e7e7b1cb210f2d30b26ad43baab72f065f, re=0x04f761f96b4a5f40e121cbd7b1571ed86634424982edefcc606e8b2029222fc7)
+
+p_cofactor_for_2f = 5
+P_COFACTOR_FOR_2F_BITLENGTH = 3
+
+MASK64 = (1 << 64) - 1
+
+
+@dataclass
+class ECPoint:
+    x: Fp2
+    z: Fp2
+
+@dataclass
+class ECCurve:
+    A: Fp2
+    C: Fp2
+    A24: Optional[ECPoint]
+    is_A24_computed_and_normalized: bool
+
+@dataclass
+class ECBasis:
+    P: ECPoint
+    Q: ECPoint
+    PmQ: ECPoint
+
+
+@dataclass
+class ECIsogEven:
+    curve: ECCurve
+    kernel: ECPoint
+    length: int
+
+@dataclass
+class PublicKey:
+    curve: ECCurve
+    hint_pk: int
+
+@dataclass
+class Signature:
+    E_aux_A: Fp2
+    mat_Bchall_can_to_B_chall: list   # 2x2 matrix of ints
+    backtracking: int
+    two_resp_length: int
+    hint_aux: int
+    hint_chall: int
+    chall_coeff: int
