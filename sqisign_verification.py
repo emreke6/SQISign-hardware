@@ -57,7 +57,7 @@ def compute_challenge_verify(
     phi_chall.length = TORSION_EVEN_POWER - sig.backtracking
 
     # Compute the basis from the supplied hint
-    ret1, phi_chall.curve = ec_curve_to_basis_2f_from_hint(
+    ret1, phi_chall.curve, bas_EA = ec_curve_to_basis_2f_from_hint(
         bas_EA,
         phi_chall.curve,
         TORSION_EVEN_POWER,
@@ -78,7 +78,7 @@ def compute_challenge_verify(
         return False
 
     # Double the kernel until it has the correct order
-    ec_dbl_iter(phi_chall.kernel, sig.backtracking, phi_chall.kernel, phi_chall.curve)
+    phi_chall.kernel,  phi_chall.curve = ec_dbl_iter(phi_chall.kernel, sig.backtracking, phi_chall.kernel, phi_chall.curve)
 
     # Compute the codomain
     E_chall = copy_curve(phi_chall.curve)
@@ -224,12 +224,6 @@ def ec_eval_even(
     image.A24 = curve_copy.A24
     image.is_A24_computed_and_normalized = curve_copy.is_A24_computed_and_normalized
 
-    print_curve("image_curve: ",image)
-    print("points_bef_ec_eval: ", points)
-    print("len_points: ", len_points)
-    print_hex_point("phi.kernel: ", phi.kernel)
-    print("phi.length: ", phi.length)
-
     ret1, new_curve = ec_eval_even_strategy(
         image,
         points,
@@ -242,14 +236,124 @@ def ec_eval_even(
 
     return ret1, new_curve
 
+def mp_sub(a: int, b: int):
+    return a-b
+
+def mp_mod_2exp(a: int, e: int) -> int:
+    return a & ((1 << e) - 1)
+
+def matrix_scalar_application_even_basis(bas: ECBasis,
+                                         E: ECCurve,
+                                         mat: list,
+                                         f: int) -> int:
+    # scalar_t scalar0, scalar1
+    scalar0 = 0
+    scalar1 = 0
+
+    tmp_bas = ECBasis(
+        P=ec_point_init(),
+        Q=ec_point_init(),
+        PmQ=ec_point_init()
+    )
+    tmp_bas.P = bas.P
+    tmp_bas.Q = bas.Q
+    tmp_bas.PmQ = bas.PmQ
+
+    # R = [a]P + [b]Q
+    bas.P, ret = ec_biscalar_mul(
+        mat[0][0],
+        mat[1][0],
+        f,
+        tmp_bas,
+        E
+    )
+    print_hex_point(" bas.P: ",  bas.P)
+    if not ret:
+        return 0
+    
+    print("here")
+
+    # S = [c]P + [d]Q
+    bas.Q, ret2 = ec_biscalar_mul(
+        mat[0][1],
+        mat[1][1],
+        f,
+        tmp_bas,
+        E
+    )
+    if not ret2:
+        return 0
+
+    # scalar0 = a - c mod 2^f
+    scalar0 = mp_sub(mat[0][0], mat[0][1])
+    scalar0 = mp_mod_2exp(scalar0, f)
+
+    # scalar1 = b - d mod 2^f
+    scalar1 = mp_sub(mat[1][0], mat[1][1])
+    scalar1 = mp_mod_2exp(scalar1, f)
+
+
+    bas.PmQ, ret3 = ec_biscalar_mul(
+        scalar0,
+        scalar1,
+        f,
+        tmp_bas,
+        E
+    )
+    if not ret3:
+        return 0
+
+    return bas, 1
+
+
 
 def challenge_and_aux_basis_verify(B_chall_can: ECBasis, B_aux_can: ECBasis, E_chall: ECCurve, E_aux: ECCurve, sig: Signature, pow_dim2_deg_resp: int):
     
-    ret1, B_chall_can = ec_curve_to_basis_2f_from_hint(B_chall_can, E_chall, TORSION_EVEN_POWER, sig.hint_chall)
-     
+
+
+    ret1, E_chall ,B_chall_can = ec_curve_to_basis_2f_from_hint(B_chall_can, E_chall, TORSION_EVEN_POWER, sig.hint_chall)
+ 
     if not ret1:
-        return 0
-    return 0
+        return False
+    
+    B_chall_can, E_chall = ec_dbl_iter_basis(B_chall_can, 
+                                             TORSION_EVEN_POWER - pow_dim2_deg_resp - HD_extra_torsion - sig.two_resp_length,
+                                             B_chall_can,
+                                             E_chall)
+
+    ret1, E_aux, B_aux_can = ec_curve_to_basis_2f_from_hint(B_aux_can, E_aux, TORSION_EVEN_POWER, sig.hint_aux)
+
+    print_curve("E_aux: ", E_aux)
+    print_hex_point("B_aux_can.P ", B_aux_can.P)
+    print_hex_point("B_aux_can.Q ", B_aux_can.Q)
+    print_hex_point("B_aux_can.PmQ ", B_aux_can.PmQ)
+
+    B_aux_can, E_aux = ec_dbl_iter_basis(B_aux_can, TORSION_EVEN_POWER - pow_dim2_deg_resp - HD_extra_torsion, B_aux_can, E_aux)
+
+    print_curve("E_aux 2: ", E_aux)
+    print_hex_point("B_aux_can.P 2 ", B_aux_can.P)
+    print_hex_point("B_aux_can.Q 2 ", B_aux_can.Q)
+    print_hex_point("B_aux_can.PmQ 2 ", B_aux_can.PmQ)
+
+    print_hex_point("B_chall_can.P 2.5 ", B_chall_can.P)
+    print_hex_point("B_chall_can.Q 2.5 ", B_chall_can.Q)
+    print_hex_point("B_chall_can.PmQ 2.5 ", B_chall_can.PmQ)
+
+    print_curve("E_chall.P 2.5 ", E_chall)
+    print(sig.mat_Bchall_can_to_B_chall)
+    print(pow_dim2_deg_resp + HD_extra_torsion + sig.two_resp_length)
+
+    B_chall_can, ret1 = matrix_scalar_application_even_basis(B_chall_can,
+                                                E_chall,
+                                                sig.mat_Bchall_can_to_B_chall,
+                                                pow_dim2_deg_resp + HD_extra_torsion + sig.two_resp_length)
+    
+
+    print_hex_point("B_chall_can.P 3 ", B_chall_can.P)
+    print_hex_point("B_chall_can.Q 3 ", B_chall_can.Q)
+    print_hex_point("B_chall_can.PmQ 3 ", B_chall_can.PmQ)
+    print_curve("E_chall: ", E_chall)
+    return True
 
 
 def protocols_verify(sig: Signature, pk: PublicKey, m: bytes, l: int) -> bool:
@@ -294,13 +398,14 @@ def protocols_verify(sig: Signature, pk: PublicKey, m: bytes, l: int) -> bool:
         Q=ECPoint(Fp2(0, 0), Fp2(0, 0)),
         PmQ=ECPoint(Fp2(0, 0), Fp2(0, 0)),
     )
+
     ret_chal_verify = challenge_and_aux_basis_verify(
             B_chall_can, B_aux_can,
             E_chall, E_aux,
             sig, pow_dim2_deg_resp)
     
     if not ret_chal_verify:
-        return 0;
+        return False
 
     return True
 
@@ -399,21 +504,6 @@ if __name__ == "__main__":
 
     result = protocols_verify(sig_obj, pk_obj, 0, 0)
     print("protocols_verify =", result)
-
-
-
-    aa = 0x06c2fdd4e6afefe00a2016bd332e9fe05a86d915518f9d99424cdeda39a0bf1e
-    bb = 0x05641ade0fb56e5f1059a05e3a212a3cd5f518c1985df1b26ddcf09d1e328cec
-
-    print(aa)
-    print(bb)
-
-    print(0x003b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13d)
-
-    print(0xf6276276276276276276276276276276276276276276276276276276276276)
-
-    print( 434916200560833065743580923259795326972919113077075435845318449548952560246*240/1000/104379888134599935778459421582350878473500587138498104602876427891748614461)
-
 
 
     

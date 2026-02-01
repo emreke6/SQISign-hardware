@@ -84,7 +84,7 @@ def find_nqr_factor(curve, start):
 
 
 
-def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: int) -> bool:
+def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: int) -> [bool, ECCurve, ECBasis]:
     # Normalise (A/C : 1) and ((A + 2)/4 : 1)
     
     curve = ec_normalize_curve_and_A24(curve)
@@ -92,7 +92,7 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
     
     if fp2_is_zero(curve.A):
         PQ2 = ec_basis_E0_2f(curve, f)
-        return True
+        return True, curve, PQ2
     
     # Decode hint
     hint_A = hint & 1
@@ -113,9 +113,10 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
         else:
             P.x.re = fp_set_one()
             P.x.im = fp_set_small(hint_P)
-            assert not (P.x.re == 0x100000000000000000000000000000000000000000000000000000000000033 and P.x.re == 0x100)
+           
+            assert P.x.re in dict1, "ERROR OF FP2_INV" 
             #P.x = fp2_inv(P.x)
-            P.x = Fp2(re=0x003b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13b13d, im=0x03d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89d89ce)
+            P.x = dict1[P.x.re][1]
             
             P.x = fp2_mul(P.x, curve.A)
             P.x = fp2_neg(P.x)
@@ -130,6 +131,14 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
     Q.x = fp2_neg(Q.x)
     Q.z = fp2_set_one()
 
+    print_fp2("Q.x: ", Q.x)
+    print_fp2("Q.z: ", Q.z)
+
+    print_fp2("P.x: ", P.x)
+    print_fp2("P.z: ", P.z)
+
+    print_curve("curve_before_clear: ", curve)
+
     # clear cofactor
     P = clear_cofactor_for_maximal_even_order(P, curve, f)
     Q = clear_cofactor_for_maximal_even_order(Q, curve, f)
@@ -143,7 +152,7 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
     print_hex_point("pq2.Q", PQ2.Q)
     print_hex_point("pq2.PmQ", PQ2.PmQ)
 
-    return True, curve
+    return True, curve, PQ2
 
 
 def is_on_curve(x: Fp2, curve: ECCurve) -> bool:

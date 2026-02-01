@@ -1114,7 +1114,7 @@ def theta_chain_compute_impl_remaining_steps(
 # Parameters / types
 NWORDS_ORDER = 4                  # number of 64-bit limbs
 RADIX = 64                        # limb size in bits
-SQIsign_response_length = 253
+SQIsign_response_length = 126
 HD_extra_torsion = 2
 TORSION_EVEN_POWER = 248
 
