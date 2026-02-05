@@ -11,6 +11,10 @@ mu  = (-pow(q,-1,R)) % R # 64-bit: (−q)^−1 (mod R)
 
 ONE = 0x0100000000000000000000000000000000000000000000000000000000000033
 
+SECURITY_BITS = 128
+HASH_ITERATIONS = 64
+FP2_ENCODED_BYTES = 64
+
 
 R_INV = pow(R, -1, q)   # modular inverse
 
@@ -326,6 +330,23 @@ def fp2_is_square(x: Fp2) -> Fp2:
 
     return fp_is_square(t0)
 
+def fp_div3(a_in: int, q: int, is_mont: bool = False) -> int:
+    """
+    Matches the C fp2_sqrt() including:
+      - canonical fp_sqrt() output (even low bit)
+      - special-case when a1 == 0: force delta = a0
+      - final canonical sign rule on (re, im)
+    Assumes q is an odd prime with q % 4 == 3 and i^2 = -1.
+    """
+    
+    if is_mont:
+        in_calc = a_in * R_INV % q
+    else:
+        in_calc = a_in
+
+    res = (in_calc * pow(3, -1, q)) % q
+
+    return (res * R) % q
 
 def fp2_is_zero(a: Fp2) -> bool:
     """
@@ -334,15 +355,15 @@ def fp2_is_zero(a: Fp2) -> bool:
     """
     return fp_is_zero(a.re, q) and fp_is_zero(a.im, q)
 
-def fp2_copy(in1):
-    return in1
+def fp2_copy(in1: Fp2) -> Fp2:
+    return Fp2(in1.re, in1.im)
 
 def fp_copy(in1):
     return in1
 
 def fp2_is_equal(a: Fp2, b: Fp2) -> bool:
     """Check equality of two Fp2 elements."""
-    return a.re == b.re and a.im == b.im
+    return a.re % q == b.re % q and a.im % q == b.im % q
 
 def fp2_add(a, b):
     fp_add_re = fp_add(a.re, b.re)
@@ -356,14 +377,86 @@ def fp2_sub(a, b):
 
     return Fp2(re=fp_sub_re, im=fp_sub_im)
 
-def fp2_inv(x):
-    """
-    Functional equivalent of C fp2_inv using fp_* operations.
 
-    Computes:
-        (a + i b)^(-1) = (a - i b) / (a^2 + b^2)
-    """
 
+def inner_gf5248_montgomery_reduce(a: int) -> int:
+    """
+    Equivalent to inner_gf5248_montgomery_reduce
+    Input: a in Montgomery form
+    Output: canonical field element
+    """
+    return (a * R_INV) % q
+
+
+def gf5248_encode(a: int) -> bytes:
+    """
+    a: integer in Montgomery form
+    returns: 32-byte little-endian encoding
+    """
+    x = inner_gf5248_montgomery_reduce(a)
+
+    out = bytearray(32)
+    for i in range(4):
+        limb = (x >> (64 * i)) & ((1 << 64) - 1)
+        out[8*i : 8*i + 8] = limb.to_bytes(8, "little")
+
+    return bytes(out)
+
+def fp_encode(a: int) -> bytes:
+    return gf5248_encode(a)
+
+
+def fp2_encode(a: "Fp2") -> bytes:
+    return fp_encode(a.re) + fp_encode(a.im)
+
+
+
+# def fp2_inv(x):
+#     """
+#     Functional equivalent of C fp2_inv using fp_* operations.
+
+#     Computes:
+#         (a + i b)^(-1) = (a - i b) / (a^2 + b^2)
+#     """
+
+#     # t0 = a^2
+#     t0 = fp_mul(x.re, x.re)
+
+#     # t1 = b^2
+#     t1 = fp_mul(x.im, x.im)
+
+#     # t0 = a^2 + b^2
+#     t0 = fp_add(t0, t1)
+
+#     # t0 = 1 / (a^2 + b^2)
+#     t0 = fp_inv(t0)
+
+#     # re = a * t0
+#     re = fp_mul(x.re, t0)
+
+#     # im = -b * t0
+#     im = fp_mul(x.im, t0)
+#     im = fp_neg(im)
+
+#     return Fp2(re=re, im=im)
+
+from arith_ops import *
+
+def modinv(a, m):
+    g, x, y = egcd(a, m)
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def fp2_inv(x: Fp2) -> Fp2:
     # t0 = a^2
     t0 = fp_mul(x.re, x.re)
 
@@ -374,16 +467,18 @@ def fp2_inv(x):
     t0 = fp_add(t0, t1)
 
     # t0 = 1 / (a^2 + b^2)
-    t0 = fp_inv(t0)
+    t0 = (modinv(t0 * R_INV, q) * R) % q
 
     # re = a * t0
     re = fp_mul(x.re, t0)
 
     # im = -b * t0
+    t0 = fp_neg(t0)
     im = fp_mul(x.im, t0)
-    im = fp_neg(im)
+    
 
     return Fp2(re=re, im=im)
+
 
 def fp_inv(a:int)->int:
     return pow(a,-1,q) * pow(2, 256, q) % q
@@ -668,6 +763,87 @@ def fp_sqr(x: Fp2)->Fp2:
 #     # Return new Fp2 element
 #     return Fp2(re=re_part, im=im_part)
 
+def mont_decode(x_mont: int, q: int, R_inv: int) -> int:
+    # x_mont is x*R mod q  -> return x
+    return (x_mont * R_inv) % q
+
+def fp_encode_lsb(x: int, q: int, R_inv: int, is_mont: bool) -> int:
+    """
+    Return the exact bit that C reads as tmp_bytes[0] & 1 after fp_encode().
+    """
+    xn = mont_decode(x, q, R_inv) if is_mont else (x % q)
+    return xn & 1
+
+
+
+def fp_sqrt_canonical(z: int, q: int, R_inv: int, is_mont: bool) -> int:
+    z %= q
+    y = pow(z, (q + 1) // 4, q)   # candidate sqrt in normal arithmetic
+
+    # If your field uses Montgomery internally, y here is normal already because pow() is normal.
+    # But if you replace pow() with montgomery exponentiation later, keep this LSB logic.
+    if fp_encode_lsb(y, q, R_inv, is_mont) == 1:
+        y = (-y) % q
+    return y
+
+
+def fp2_sqrt(a_in: Fp2, q: int, is_mont: bool = True) -> Fp2:
+    """
+    Matches the C fp2_sqrt() including:
+      - canonical fp_sqrt() output (even low bit)
+      - special-case when a1 == 0: force delta = a0
+      - final canonical sign rule on (re, im)
+    Assumes q is an odd prime with q % 4 == 3 and i^2 = -1.
+    """
+    a0 = a_in.re % q
+    a1 = a_in.im % q
+
+    # x0 = delta = sqrt(a0^2 + a1^2) in F_q, canonicalized like gf5248_sqrt
+    n = (a0 * a0 + a1 * a1) % q
+    # (Optional) If you want same assumptions as C fp_sqrt: it doesn't fail hard if non-square.
+    # Keep your residue check if you want safety.
+    # if n != 0 and pow(n, (q-1)//2, q) != 1:
+    #     raise ValueError("not a square")
+
+    delta = fp_sqrt_canonical(n, q, R_INV, is_mont)
+
+    # If a1 == 0, force delta = a0 (C does this to avoid delta = -a0 -> x0=0 later)
+    if a1 == 0:
+        delta = a0
+
+    # x0 = delta + a0, t0 = 2*x0
+    x0 = (delta + a0) % q
+    t0 = (2 * x0) % q
+
+    # x1 = t0^((q-3)/4)
+    x1 = pow(t0, (q - 3) // 4, q)
+
+    # x0 = x0*x1 ; x1 = x1*a1 ; t1 = (2*x0)^2
+    x0 = (x0 * x1) % q
+    x1 = (x1 * a1) % q
+    t1 = (2 * x0) % q
+    t1 = (t1 * t1) % q
+
+    # If t1 == t0 return (x0, x1) else return (x1, -x0)
+    if (t0 - t1) % q == 0:
+        re, im = x0, x1
+    else:
+        re, im = x1, (-x0) % q
+
+    # FINAL canonicalization exactly like C using fp_encode LSBs
+    re_is_zero = (re % q) == 0
+    re_is_odd  = fp_encode_lsb(re, q, R_INV, is_mont) == 1
+    im_is_odd  = fp_encode_lsb(im, q, R_INV, is_mont) == 1
+
+    negate_output = re_is_odd or (re_is_zero and im_is_odd)
+    if negate_output:
+        re = (-re) % q
+        im = (-im) % q
+
+    return Fp2(re, im)
+
+
+
 def fp2_sqr(y: Fp2) -> Fp2:
     """
     Computes x = y^2 in the quadratic extension field Fp2.
@@ -803,199 +979,8 @@ def theta_precomputation(A: ThetaStructure) -> ThetaStructure:
     return A_new
 
 
-def double_point(A: ThetaStructure, inp: ThetaPoint) -> ThetaPoint:
-    """
-    Python equivalent of:
-        void double_point(theta_point_t *out, theta_structure_t *A, const theta_point_t *in)
-    Performs a single theta-point doubling with precomputation and fp2 operations.
-    """
-    # --- Step 1: Move to squared theta coordinates
-    out = to_squared_theta(inp)
-
-    # --- Step 2: Square each coordinate
-    out.x = fp2_sqr(out.x)
-    out.y = fp2_sqr(out.y)
-    out.z = fp2_sqr(out.z)
-    out.t = fp2_sqr(out.t)
-
-    # --- Step 3: Ensure precomputation
-    if not A.precomputation:
-        theta_precomputation(A)
-
-    # --- Step 4: Multiply with A’s precomputed constants
-    out.x = fp2_mul(out.x, A.YZT0)
-    out.y = fp2_mul(out.y, A.XZT0)
-    out.z = fp2_mul(out.z, A.XYT0)
-    out.t = fp2_mul(out.t, A.XYZ0)
-
-    # --- Step 5: Hadamard transform
-    out = hadamard_sqisign(out)
-
-    # --- Step 6: Final multiplication with lowercase constants
-    out.x = fp2_mul(out.x, A.yzt0)
-    out.y = fp2_mul(out.y, A.xzt0)
-    out.z = fp2_mul(out.z, A.xyt0)
-    out.t = fp2_mul(out.t, A.xyz0)
-
-    return out
-
-def double_iter(A: ThetaStructure, inp: ThetaPoint, exp: int) -> ThetaPoint:
-    """
-    Python equivalent of:
-        void double_iter(theta_point_t *out, theta_structure_t *A, const theta_point_t *in, int exp)
-    Performs repeated theta-doubling.
-    """
-    # Base case — exp == 0
-    if exp == 0:
-        return ThetaPoint(
-            x=Fp2(inp.x.re, inp.x.im),
-            y=Fp2(inp.y.re, inp.y.im),
-            z=Fp2(inp.z.re, inp.z.im),
-            t=Fp2(inp.t.re, inp.t.im)
-        )
-
-    # Perform the first doubling
-    out = double_point(A, inp)
-
-    # Repeat exp−1 additional doublings
-    for _ in range(1, exp):
-        out = double_point(A, out)
-
-    return out
 
 
-
-def theta_isogeny_compute(
-    A: ThetaStructure,
-    T1_8: ThetaPoint,
-    T2_8: ThetaPoint,
-    hadamard_bool_1: bool,
-    hadamard_bool_2: bool,
-    verify: bool) -> ThetaIsogeny:
-
-    out = ThetaIsogeny()
-    # Assign top-level isogeny attributes
-    out.hadamard_bool_1 = hadamard_bool_1
-    out.hadamard_bool_2 = hadamard_bool_2
-    out.domain = A
-    out.T1_8 = T1_8
-    out.T2_8 = T2_8
-    out.codomain.precomputation = False
-
-    # Local theta points (temporary variables)
-    TT1 = ThetaPoint(
-        x=Fp2(0, 0),
-        y=Fp2(0, 0),
-        z=Fp2(0, 0),
-        t=Fp2(0, 0)
-    )
-
-    TT2 = ThetaPoint(
-        x=Fp2(0, 0),
-        y=Fp2(0, 0),
-        z=Fp2(0, 0),
-        t=Fp2(0, 0)
-    )
-
-    # If Hadamard transformation enabled
-    if hadamard_bool_1:
-        TT1 = hadamard_sqisign(T1_8) # 4 add + 4 sub
-        TT1 = to_squared_theta(TT1)  # 2 add + 1 sub + 2 mul
-
-        TT2 = hadamard_sqisign(T2_8) # 4 add + 4 sub
-        TT2 = to_squared_theta(TT2) # 2 add + 1 sub + 2 mul
-    else:
-        TT1 = to_squared_theta(T1_8) # 2 add + 1 sub + 2 mul
-        TT2 = to_squared_theta(T2_8) # 2 add + 1 sub + 2 mul
-
-
-    if (
-        fp2_is_zero(TT2.x, q)
-        or fp2_is_zero(TT2.y, q)
-        or fp2_is_zero(TT2.z, q)
-        or fp2_is_zero(TT2.t, q)
-        or fp2_is_zero(TT1.x, q)
-        or fp2_is_zero(TT1.y, q)
-    ):
-        return None  # corresponds to 'return 0;' in C
-    
-    # Local fp2 temporaries
-    t1 = Fp2(0, 0)
-    t2 = Fp2(0, 0)
-
-    t1 = fp2_mul(TT1.x, TT2.y) # 2 add 3 sub 3 mul
-    t2 = fp2_mul(TT1.y, TT2.x) # 2 add 3 sub 3 mul
-
-    t3 = fp2_mul(TT2.z, TT2.t) # 2 add 3 sub 3 mul
-
-    # Compute outputs (handle absent z/t if needed)
-    out_x = fp2_mul(TT2.x, t1) # 2 add 3 sub 3 mul
-    out_y = fp2_mul(TT2.y, t2) # 2 add 3 sub 3 mul
-    out_z = fp2_mul(TT2.z, t1) if TT2.z else Fp2(0, 0) # 2 add 3 sub 3 mul
-    out_t = fp2_mul(TT2.t, t2) if TT2.t else Fp2(0, 0) # 2 add 3 sub 3 mul
-
-    # Build nested codomain structure (with placeholders for other fields)
-    null_point = ThetaPoint(x=out_x, y=out_y, z=out_z, t=out_t)
-
-
-    
-    pre_x = fp2_mul(t3, TT1.y) # 2 add 3 sub 3 mul
-    pre_y = fp2_mul(t3, TT1.x) # 2 add 3 sub 3 mul
-    pre_z = fp2_copy(out_t)
-    pre_t = fp2_copy(out_z)
-    precomp_point = ThetaPoint(x=pre_x, y=pre_y, z=pre_z, t=pre_t)
-
-    out.precomputation = precomp_point
-
-
-    codomain_new = ThetaStructure(
-        null_point=null_point,
-        precomputation=False,
-        XYZ0=Fp2(0, 0),
-        YZT0=Fp2(0, 0),
-        XZT0=Fp2(0, 0),
-        XYT0=Fp2(0, 0),
-        xyz0=Fp2(0, 0),
-        yzt0=Fp2(0, 0),
-        xzt0=Fp2(0, 0),
-        xyt0=Fp2(0, 0),
-    )
-
-    out.codomain = codomain_new
-
-    if verify:
-        # (1) TT1.x * out.precomputation.x == TT1.y * out.precomputation.y
-        t1 = fp2_mul(TT1.x, out.precomputation.x)
-        t2 = fp2_mul(TT1.y, out.precomputation.y)
-        if not fp2_is_equal(t1, t2):
-            return None
-
-        # (2) TT1.z * out.precomputation.z == TT1.t * out.precomputation.t
-        t1 = fp2_mul(TT1.z, out.precomputation.z)
-        t2 = fp2_mul(TT1.t, out.precomputation.t)
-        if not fp2_is_equal(t1, t2):
-            return None
-
-        # (3) TT2.x * out.precomputation.x == TT2.z * out.precomputation.z
-        t1 = fp2_mul(TT2.x, out.precomputation.x)
-        t2 = fp2_mul(TT2.z, out.precomputation.z)
-        if not fp2_is_equal(t1, t2):
-            return None
-
-        # (4) TT2.y * out.precomputation.y == TT2.t * out.precomputation.t
-        t1 = fp2_mul(TT2.y, out.precomputation.y)
-        t2 = fp2_mul(TT2.t, out.precomputation.t)
-        if not fp2_is_equal(t1, t2):
-            return None
-
-    if hadamard_bool_2:
-        out.codomain.null_point = hadamard_sqisign(out.codomain.null_point) # 4 add + 4 sub
-
-
-    # Fill minimal isogeny structure
-    out.precomputation = precomp_point
-
-    return out
 
 
 
@@ -1027,87 +1012,6 @@ def theta_isogeny_eval(phi: ThetaIsogeny, P: ThetaPoint):
         out = calc2
 
     return out
-
-
-def theta_chain_compute_impl_remaining_steps(
-    n: int,
-    theta: ThetaStructure,
-    thetaQ1: List[ThetaPoint],
-    thetaQ2: List[ThetaPoint],
-    todo: List[int],
-    current: int,
-    space: int,
-    numP: int,
-    pts: List[ThetaPoint],
-    verify: bool
-    ) -> Tuple[ThetaStructure, List[ThetaPoint], List[ThetaPoint], List[ThetaPoint]]:
-    """
-    Python translation of the '_theta_chain_compute_impl' main loop:
-        for (unsigned i = 1; current >= 0 && todo[current]; ++i)
-    using class-based structures.
-    """
-
-    i = 1
-    while current >= 0 and todo[current] != 0:
-        assert current < space
-
-        # --- handle nested while loop ---
-        while todo[current] != 1:
-            assert todo[current] >= 2
-            current += 1
-            assert current < space
-
-            num_dbls = todo[current - 1] // 2
-            assert num_dbls > 0 and num_dbls < todo[current - 1]
-
-            # double_iter(&thetaQ1[current], &theta, &thetaQ1[current - 1], num_dbls)
-            thetaQ1[current] = double_iter(theta, thetaQ1[current - 1], num_dbls)
-
-            # double_iter(&thetaQ2[current], &theta, &thetaQ2[current - 1], num_dbls)
-            thetaQ2[current] = double_iter(theta, thetaQ2[current - 1], num_dbls)
-
-            # update remaining work
-            todo[current] = todo[current - 1] - num_dbls
-
-        # --- compute the next step ---
-        if i == n - 2:
-            # penultimate step
-            step = theta_isogeny_compute(theta, thetaQ1[current], thetaQ2[current],
-                                         hadamard_bool_1=0, hadamard_bool_2=0, verify=verify)
-        elif i == n - 1:
-            # ultimate step
-            step = theta_isogeny_compute(theta, thetaQ1[current], thetaQ2[current],
-                                         hadamard_bool_1=1, hadamard_bool_2=0, verify=False)
-        else:
-            # regular middle step
-            step = theta_isogeny_compute(theta, thetaQ1[current], thetaQ2[current],
-                                         hadamard_bool_1=0, hadamard_bool_2=1, verify=verify)
-
-        if step is None:
-            print("Error: theta_isogeny_compute failed")
-            return None
-
-        # --- evaluate step on points ---
-        for j in range(numP):
-            pts[j] = theta_isogeny_eval(step, pts[j])
-
-        # --- update codomain ---
-        theta = step.codomain
-
-        # --- push kernel through new isogeny ---
-        assert todo[current] == 1
-        for j in range(current):
-            thetaQ1[j] = theta_isogeny_eval(step, thetaQ1[j])
-            thetaQ2[j] = theta_isogeny_eval(step, thetaQ2[j])
-            assert todo[j] > 0
-            todo[j] -= 1
-
-        current -= 1
-        i += 1
-
-    assert current == -1 or todo[current] == 0
-    return theta, pts, thetaQ1, thetaQ2
-
 
 
 

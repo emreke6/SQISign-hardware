@@ -13,6 +13,10 @@ dict1 = {
     0x39dd44ef48287c1dca36138587576a8a371c0e58137e687b493898d4a226e26: (Fp2(re=0x39dd44ef48287c1dca36138587576a8a371c0e58137e687b493898d4a226e26, im=0x2a14fcbff102610691d3629863a80a535c47b28c49ee25cf676d3661376b9a3), Fp2(re=0x052bc5cd0a7e4bfaef591391e88e6582abec35ca5babcf9dc09093c7ac2fb5bf, im=0x024372b1df9e32561e569f51c615f23b712ffea2b43ced6eac3d420b09c9034a))
 }
 
+dict2 = {
+    0x123141: (Fp2(0,0), Fp2(0,0))
+}
+
 @dataclass
 class ECPoint:
     x: Fp2
@@ -24,6 +28,21 @@ class ECCurve:
     C: Fp2
     A24: Optional[ECPoint]
     is_A24_computed_and_normalized: bool
+
+def ec_point_init() -> ECPoint:
+    return ECPoint(
+        x=fp2_set_one(),
+        z=fp2_set_zero(),
+    )
+
+def ec_curve_init() -> ECCurve:
+    return ECCurve(
+        A=fp2_set_zero(),
+        C=fp2_set_one(),
+        A24=ec_point_init(),
+        is_A24_computed_and_normalized=False,
+    )
+
 
 @dataclass
 class ECBasis:
@@ -46,6 +65,257 @@ class ECKPS4:
         ECPoint(Fp2(0, 0), Fp2(0, 0)),
     ])
 
+@dataclass
+class add_components_t:
+    u: Fp2 = None
+    v: Fp2 = None
+    w: Fp2 = None
+
+@dataclass
+class theta_couple_curve_t:
+    E1: ECCurve
+    E2: ECCurve
+
+@dataclass
+class theta_couple_point_t:
+    P1: ECPoint = None
+    P2: ECPoint = None
+
+@dataclass
+class theta_kernel_couple_points_t:
+    T1: theta_couple_point_t
+    T2: theta_couple_point_t
+    T1m2: theta_couple_point_t
+
+@dataclass
+class jac_point_t:
+    x: Fp2 = None
+    y: Fp2 = None
+    z: Fp2 = None
+
+    def __post_init__(self):
+        if self.x is None:
+            self.x = fp2_set_zero()
+        if self.y is None:
+            self.y = fp2_set_zero()
+        if self.z is None:
+            self.z = fp2_set_zero()
+
+
+def copy_jac_point(jac_point_in : jac_point_t):
+    jac_new = jac_point_t(x= jac_point_in.x, y=jac_point_in.y, z=jac_point_in.z)
+
+    return jac_new
+
+
+@dataclass
+class theta_couple_jac_point_t:
+    P1: jac_point_t = None
+    P2: jac_point_t = None
+
+@dataclass
+class theta_point_compact_t:
+    x: Fp2
+    y: Fp2
+
+@dataclass
+class basis_change_matrix_t:
+    m: list[list[Fp2]] = field(
+        default_factory=lambda: [[Fp2(0, 0) for _ in range(4)] for _ in range(4)]
+    )
+
+def basis_change_matrix_init():
+    return basis_change_matrix_t(
+        m=list(
+            list(Fp2() for _ in range(4))
+            for _ in range(4)
+        )
+    )
+
+def basis_change_matrix_init_zero():
+    return basis_change_matrix_t(
+        m=list(
+            list(Fp2(re=0, im=0) for _ in range(4))
+            for _ in range(4)
+        )
+    )
+@dataclass
+class translation_matrix_t:
+    g00: Fp2 = None
+    g01: Fp2 = None
+    g10: Fp2 = None
+    g11: Fp2 = None
+
+
+@dataclass
+class theta_gluing_t:
+    domain = theta_couple_curve_t
+    xyK1_8 = theta_couple_jac_point_t
+    imageK1_8 = theta_point_compact_t
+    M = basis_change_matrix_t
+    precomputation = ThetaPoint
+    codomain = ThetaPoint
+
+@dataclass
+class theta_isogeny_t:
+    T1_8: ThetaPoint = None
+    T2_8: ThetaPoint = None
+    hadamard_bool_1: bool = None
+    hadamard_bool_2: bool = None
+    domain: ThetaStructure = None
+    precomputation: ThetaPoint = None
+    codomain: ThetaStructure = None
+
+@dataclass
+class theta_splitting_t:
+    M: basis_change_matrix_t = field(default_factory=basis_change_matrix_t)
+    B: ThetaStructure = field(default_factory=ThetaStructure)
+
+
+EVEN_INDEX = [
+    (0, 0), (0, 1), (0, 2), (0, 3),
+    (1, 0), (1, 2),
+    (2, 0), (2, 1),
+    (3, 0), (3, 3),
+]
+
+CHI_EVAL = [
+    [ 1,  1,  1,  1],
+    [ 1, -1,  1, -1],
+    [ 1,  1, -1, -1],
+    [ 1, -1, -1,  1],
+]
+
+FP2_ZERO = 0
+FP2_ONE =  1
+FP2_I = 2
+FP2_MINUS_ONE = 3
+FP2_MINUS_I = 4
+
+
+
+SPLITTING_TRANSFORMS = (
+    (
+        (FP2_ONE,  FP2_I,        FP2_ONE,        FP2_I),
+        (FP2_ONE,  FP2_MINUS_I,  FP2_MINUS_ONE,  FP2_I),
+        (FP2_ONE,  FP2_I,        FP2_MINUS_ONE,  FP2_MINUS_I),
+        (FP2_MINUS_ONE, FP2_I,   FP2_MINUS_ONE,  FP2_I),
+    ),
+    (
+        (FP2_ONE,  FP2_ZERO, FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ZERO, FP2_ONE),
+        (FP2_ZERO, FP2_ZERO, FP2_ONE,  FP2_ZERO),
+        (FP2_ZERO, FP2_MINUS_ONE, FP2_ZERO, FP2_ZERO),
+    ),
+    (
+        (FP2_ONE,  FP2_ZERO, FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ONE,  FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ZERO, FP2_ONE),
+        (FP2_ZERO, FP2_ZERO, FP2_MINUS_ONE, FP2_ZERO),
+    ),
+    (
+        (FP2_ONE,  FP2_ZERO, FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ONE,  FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ONE,  FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ZERO, FP2_MINUS_ONE),
+    ),
+    (
+        (FP2_ONE,  FP2_ONE,        FP2_ONE,        FP2_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_MINUS_ONE,  FP2_ONE),
+        (FP2_ONE,  FP2_ONE,        FP2_MINUS_ONE,  FP2_MINUS_ONE),
+        (FP2_MINUS_ONE, FP2_ONE,   FP2_MINUS_ONE,  FP2_ONE),
+    ),
+    (
+        (FP2_ONE,  FP2_ZERO, FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ONE,  FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ZERO, FP2_ONE),
+        (FP2_ZERO, FP2_ZERO, FP2_ONE,  FP2_ZERO),
+    ),
+    (
+        (FP2_ONE,  FP2_ONE,        FP2_ONE,        FP2_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_ONE,        FP2_MINUS_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_MINUS_ONE,  FP2_ONE),
+        (FP2_MINUS_ONE, FP2_MINUS_ONE, FP2_ONE, FP2_ONE),
+    ),
+    (
+        (FP2_ONE,  FP2_ONE,        FP2_ONE,        FP2_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_ONE,        FP2_MINUS_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_MINUS_ONE,  FP2_ONE),
+        (FP2_ONE,  FP2_ONE,        FP2_MINUS_ONE,  FP2_MINUS_ONE),
+    ),
+    (
+        (FP2_ONE,  FP2_ONE,        FP2_ONE,        FP2_ONE),
+        (FP2_ONE,  FP2_MINUS_ONE,  FP2_ONE,        FP2_MINUS_ONE),
+        (FP2_ONE,  FP2_ONE,        FP2_MINUS_ONE,  FP2_MINUS_ONE),
+        (FP2_MINUS_ONE, FP2_ONE,   FP2_ONE,        FP2_MINUS_ONE),
+    ),
+    (
+        (FP2_ONE,  FP2_ZERO, FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ONE,  FP2_ZERO, FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ONE,  FP2_ZERO),
+        (FP2_ZERO, FP2_ZERO, FP2_ZERO, FP2_ONE),
+    ),
+)
+
+FP2_CONSTANTS = (
+    # 0
+    Fp2(0, 0),
+
+    # 1
+    Fp2(
+        0x33
+        + (0x0 << 64)
+        + (0x0 << 128)
+        + (0x100000000000000 << 192),
+        0
+    ),
+    # i
+    Fp2(
+        0,
+        0x33
+        + (0x0 << 64)
+        + (0x0 << 128)
+        + (0x100000000000000 << 192)
+    ),
+
+    # -1
+    Fp2(
+        0xffffffffffffffcc
+        + (0xffffffffffffffff << 64)
+        + (0xffffffffffffffff << 128)
+        + (0x3ffffffffffffff << 192),
+        0
+    ),
+
+    # -i
+    Fp2(
+        0,
+        0xffffffffffffffcc
+        + (0xffffffffffffffff << 64)
+        + (0xffffffffffffffff << 128)
+        + (0x3ffffffffffffff << 192)
+    ),
+)
+
+
+def copy_bases_to_kernel(B1: ECBasis, B2: ECBasis)->theta_kernel_couple_points_t:
+
+    ker = theta_kernel_couple_points_t(
+        T1 = theta_couple_point_t(P1=ec_point_init(), P2=ec_point_init),
+        T2 = theta_couple_point_t(P1=ec_point_init(), P2=ec_point_init),
+        T1m2 = theta_couple_point_t(P1=ec_point_init(), P2=ec_point_init)
+    )
+    #Copy the basis on E1 to (P, _) on T1, T2 and T1 - T2
+    ker.T1.P1 = copy_point(B1.P)
+    ker.T2.P1 = copy_point(B1.Q)
+    ker.T1m2.P1 = copy_point(B1.PmQ)
+
+    #Copy the basis on E2 to (_, P) on T1, T2 and T1 - T2
+    ker.T1.P2 = copy_point(B2.P)
+    ker.T2.P2 = copy_point(B2.Q)
+    ker.T1m2.P2 = copy_point(B2.PmQ)
+
+    return ker
 
 
 def multiple_mp_shiftl_int(x: int, shift: int) -> int:
@@ -58,19 +328,7 @@ def mp_compare_int(a: int, b: int) -> int:
     if a < b: return -1
     return 0
 
-def ec_point_init() -> ECPoint:
-    return ECPoint(
-        x=fp2_set_one(),
-        z=fp2_set_zero(),
-    )
 
-def ec_curve_init() -> ECCurve:
-    return ECCurve(
-        A=fp2_set_zero(),
-        C=fp2_set_one(),
-        A24=ec_point_init(),
-        is_A24_computed_and_normalized=False,
-    )
 
 
 
@@ -184,10 +442,11 @@ def ec_normalize_curve_and_A24(E: ECCurve) -> ECCurve:
         return new_ret
 
 def ec_normalize_curve(E: ECCurve) -> ECCurve:
-    #C_inv = fp2_inv(E.C)
+    
     
     assert E.C.re in dict1, "ERROR OF FP2_INV"
-    C_inv = dict1[E.C.re][1]
+    C_inv = fp2_inv(E.C)
+    #C_inv = dict1[E.C.re][1]
     A_new = fp2_mul(E.A, C_inv)
 
     return ECCurve(
@@ -312,7 +571,7 @@ def difference_point(P, Q, curve):
     t0 = fp2_sub(t0, t1)
     
     #t0_new = fp2_sqrt(t0) # leave it for now
-    print_fp2("aa: ", t0)
+    #print_fp2("aa: ", t0)
     assert t0.re in dict1, "ERROR OF FP2_SQRT"
     t0 = dict1[t0.re][1]
     
@@ -619,28 +878,6 @@ def xDBLADD(
     S = ECPoint(x=Sx, z=Sz)
     return R, S
 
-def print_hex_point(name, point):
-    print("---" + str(name) + "---")
-    print("A.re: ", hex(point.x.re))
-    print("A.im: ", hex(point.x.im))
-    print("Z.re: ", hex(point.z.re))
-    print("Z.im: ", hex(point.z.im))
-
-
-def print_fp2(name: str, A : Fp2):
-    print("---" + str(name) + "---")
-    print("A.re: ", hex(A.re))
-    print("A.im: ", hex(A.im))
-
-def print_curve(name: str ,curve: ECCurve):
-    print("---" + str(name) + "---")
-    print_fp2("curve.A: ",  curve.A)
-    print_fp2("curve.C: ",  curve.C)
-    if curve.A24 != None:
-        print_hex_point("curve.A24: ", curve.A24)
-    else:
-        print("curve.A24: ", None)
-    print("curve.normalized: ", curve.is_A24_computed_and_normalized)
 
 def xMUL(P: ECPoint, k: int, kbits: int, curve: ECCurve) -> ECPoint:
     """
@@ -776,6 +1013,19 @@ def xDBL_A24(
     return ECPoint(x=X, z=Z)
 
 
+def ec_dbl( P: ECPoint, curve: ECCurve):
+
+    res = ec_point_init()
+    # If A24 = ((A+2)/4 : 1) we save multiplications
+    if curve.is_A24_computed_and_normalized:
+        assert fp2_is_one(curve.A24.z)
+        res = xDBL_A24(P, curve.A24, True)
+    else:
+        #Otherwise we compute A24 on the fly for doubling
+        res = xDBL(P, curve)
+    
+    return res
+
 def ec_dbl_iter(res: ECPoint, n: int, P: ECPoint, curve: ECCurve):
     """
     Perform n successive elliptic curve doublings starting from P.
@@ -798,7 +1048,6 @@ def ec_dbl_iter(res: ECPoint, n: int, P: ECPoint, curve: ECCurve):
     
     # If A24 is already computed and normalized, use the optimized doubling
     if curve_new.is_A24_computed_and_normalized:
-        print("uuuu")
         assert fp2_is_one(curve_new.A24.z)
 
         # First doubling
@@ -810,7 +1059,6 @@ def ec_dbl_iter(res: ECPoint, n: int, P: ECPoint, curve: ECCurve):
             res = xDBL_A24(res, curve_new.A24, True)
 
     else:
-        print("maa")
         # Fallback: generic doubling
         res = xDBL(P, curve_new)
 
@@ -835,6 +1083,26 @@ def ec_is_zero(P: ECPoint) -> bool:
     Returns True iff P is the point at infinity.
     """
     return fp2_is_zero(P.z)
+
+def ec_is_equal(P: ECPoint, Q: ECPoint):
+    # Evaluate if two points in Montgomery coordinates (X:Z) are equal
+    # Returns 0xFFFFFFFF (true) if P=Q, 0 (false) otherwise
+    t0 = Fp2()
+    t1 = Fp2()
+
+    # Check if P, Q are the points at infinity
+    l_zero = ec_is_zero(P)
+    r_zero = ec_is_zero(Q)
+
+    # Check if PX * QZ = QX * PZ
+    t0 = fp2_mul(P.x, Q.z)
+    t1 = fp2_mul(P.z, Q.x)
+    lr_equal = fp2_is_equal(t0, t1)
+
+    # Points are equal if
+    # - Both are zero, or
+    # - neither are zero AND PX * QZ = QX * PZ
+    return (l_zero and r_zero) or ((not l_zero) & (not r_zero) * lr_equal)
 
 
 def ec_is_two_torsion(P: ECPoint, E: ECCurve) -> bool:
@@ -1112,14 +1380,6 @@ def ec_biscalar_mul(scalarP: int,
     if not fp2_is_zero(curve.A):
         E = ec_curve_normalize_A24(E)
 
-    print("ANAN")
-    print_hex_point("PQ.P: ", PQ.P)
-    print("scalarP: ", hex(scalarP))
-    print_hex_point("PQ.Q: ", PQ.Q)
-    print("scalarQ: ", hex(scalarQ))
-    print_hex_point("PQ.PmQ: ", PQ.PmQ)
-    print("kbits: ", kbits)
-    print_curve("E: ", E)
     res, ret = xDBLMUL(
         PQ.P, scalarP,
         PQ.Q, scalarQ,
@@ -1128,4 +1388,208 @@ def ec_biscalar_mul(scalarP: int,
         E
     )
     return res, ret
+
+def jac_to_ws(ao3: Fp2, P: jac_point_t, curve: ECCurve)->any:
+    one = ONE
+
+    ao3_new = ao3
+
+    Q = jac_point_t()
+
+    if not fp2_is_zero(curve.A):
+        ao3_new.re = fp_div3( curve.A.re, q, True)
+        ao3_new.im = fp_div3( curve.A.im, q, True)
+
+        t = fp2_sqr(P.z)
+        Q.x = fp2_mul(ao3_new, t)
+        Q.x = fp2_add( Q.x, P.x)
+
+        t = fp2_sqr(t)
+        a = fp2_set_zero()
+        a = fp2_mul( ao3_new, curve.A)
+
+        a.re = fp_sub(one, a.re)
+        a.im = fp_neg(a.im)
+
+        t = fp2_mul( t, a)
+    else:
+        Q.x = fp2_copy(P.x)
+        t = fp2_sqr(P.z)
+        t = fp2_sqr( t)
+
+    Q.y = fp2_copy(P.y)
+    Q.z = fp2_copy(P.z)
+
+    return Q, t, ao3_new
+
+
+def jac_from_ws(Q: jac_point_t, P: jac_point_t, ao3: Fp2, curve: ECCurve):
+    Q_new = jac_point_t()
+    Q_new.x = Q.x
+    Q_new.y = Q.y
+    Q_new.z = Q.z
+    if not fp2_is_zero(curve.A):
+        t   = fp2_set_zero()
+        t   = fp2_sqr(P.z)
+        t   = fp2_mul(t, ao3)
+        Q_new.x = fp2_sub(P.x, t)
+
+    Q_new.y = fp2_copy(P.y)
+    Q_new.z = fp2_copy(P.z)
+
+    return Q_new
+
+
+def fp2_select(a0, a1, ctl):
+    d = Fp2()
+    d.re = fp_select(a0.re, a1.re, ctl)
+    d.im = fp_select(a0.im, a1.im, ctl)
+
+    return d
+
+def fp_select(a0, a1, ctl):
+    return a0 if ctl == 0 else a1
+
+def DBL(P: jac_point_t, AC: ECPoint):
+    Q = jac_point_t()
+    t0 = fp2_set_zero()
+    t1 = fp2_set_zero()
+    t2 = fp2_set_zero()
+    t3 = fp2_set_zero()
+
+    flag = fp2_is_zero(P.x) & fp2_is_zero(P.z)
+
+    t0 = fp2_sqr(P.x)
+    t1 = fp2_add(t0, t0)
+    t0 = fp2_add(t0, t1)
+
+    t1 = fp2_sqr( P.z)
+    t2 = fp2_mul( P.x, AC.A)
+    t2 = fp2_add( t2, t2)
+    t2 = fp2_add(t1, t2)
+    t2 = fp2_mul(t1, t2)
+    t2 = fp2_add(t0, t2)
+
+    Q.z = fp2_mul(P.y, P.z)
+    Q.z = fp2_add(Q.z, Q.z)
+
+    t0 = fp2_sqr(Q.z)
+    t0 = fp2_mul(t0, AC.A)
+
+    t1 = fp2_sqr(P.y)
+    t1 = fp2_add(t1, t1)
+
+    t3 = fp2_add(P.x, P.x)
+    t3 = fp2_mul(t1, t3)
+
+    Q.x = fp2_sqr(t2)
+    Q.x = fp2_sub(Q.x, t0)
+    Q.x = fp2_sub(Q.x, t3)
+    Q.x = fp2_sub(Q.x, t3)
+
+    Q.y = fp2_sub(t3, Q.x)
+    Q.y = fp2_mul(Q.y, t2)
+
+    t1 = fp2_sqr(t1)
+    Q.y = fp2_sub( Q.y, t1)
+    Q.y = fp2_sub( Q.y, t1)
+
+    ctl = -flag & 0xFFFFFFFF
+    Q.z = fp2_select(Q.z, P.z, ctl)
+    Q.x = fp2_select(Q.x, P.x, ctl)
+
+    return Q
+
+
+
+
+
+def double_couple_jac_point(inp: theta_couple_jac_point_t, E1E2: theta_couple_curve_t):
+    out = theta_couple_jac_point_t(P1=None, P2=None)
+    out.P1 = DBL(inp.P1, E1E2.E1)
+    out.P2 = DBL(inp.P2, E1E2.E2)
+
+    return out
+
+def DBLW(P: jac_point_t, t: Fp2):
+    Q = jac_point_t()
+    u = Fp2()
+    flag = fp2_is_zero(P.x) & fp2_is_zero(P.z)
+
+    xx = fp2_set_zero()
+    c = fp2_set_zero()
+    cc = fp2_set_zero()
+    r = fp2_set_zero()
+    s = fp2_set_zero()
+    m = fp2_set_zero()
+
+    xx = fp2_sqr(P.x)
+
+    c = fp2_sqr( P.y)
+    c = fp2_add( c, c)
+
+    cc  = fp2_sqr( c)
+    r   = fp2_add(cc, cc)
+
+    s = fp2_add(P.x, c)
+    s = fp2_sqr(s)
+    s = fp2_sub(s, xx)
+    s = fp2_sub(s, cc)
+
+    m = fp2_add(xx, xx)
+    m = fp2_add(m, xx)
+    m = fp2_add(m, t)
+
+    Q.x = fp2_sqr(m)
+    Q.x = fp2_sub(Q.x, s)
+    Q.x = fp2_sub(Q.x, s)
+
+    Q.z = fp2_mul(P.y, P.z)
+    Q.z = fp2_add(Q.z, Q.z)
+
+    Q.y = fp2_sub(s, Q.x)
+    Q.y = fp2_mul(Q.y, m)
+    Q.y = fp2_sub(Q.y, r)
+
+    u = fp2_mul(t, r)
+    u = fp2_add(u, u)
+
+    ctl = -flag & 0xFFFFFFFF
+    Q.x = fp2_select(Q.x, P.x, ctl)
+    Q.z = fp2_select(Q.z, P.z, ctl)
+
+    return Q, u
+
+
+
+def double_couple_jac_point_iter(n: int, inp: theta_couple_jac_point_t, E1E2: theta_couple_curve_t):
+    out = theta_couple_jac_point_t(P1=jac_point_t(), P2=jac_point_t())
+    if n == 0:
+        out.P1 = copy_jac_point(inp.P1)
+        out.P2 = copy_jac_point(inp.P2)
+    elif n == 1:
+        out = double_couple_jac_point(inp, E1E2)
+    else:
+        t1 = fp2_set_zero()
+        t2 = fp2_set_zero()
+        a1 = fp2_set_zero()
+        a2 = fp2_set_zero()
+
+        out.P1, t1, a1 = jac_to_ws(a1, inp.P1, E1E2.E1)
+        out.P2, t2, a2 = jac_to_ws(a2, inp.P2, E1E2.E2)
+
+        out.P1, t1 = DBLW( out.P1, t1)
+        out.P2, t2 = DBLW( out.P2, t2)
+
+        for _ in range(n - 1):
+            out.P1, t1 = DBLW(out.P1, t1)
+            out.P2, t2 = DBLW(out.P2, t2)
+
+        out.P1 = jac_from_ws(out.P1, out.P1, a1, E1E2.E1)
+        out.P2 = jac_from_ws(out.P2, out.P2, a2, E1E2.E2)
+
+
+    return out
+
+
 

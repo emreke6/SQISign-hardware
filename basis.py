@@ -115,13 +115,11 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
             P.x.im = fp_set_small(hint_P)
            
             assert P.x.re in dict1, "ERROR OF FP2_INV" 
-            #P.x = fp2_inv(P.x)
-            P.x = dict1[P.x.re][1]
+            P.x = fp2_inv(P.x)
+            #P.x = dict1[P.x.re][1]
             
             P.x = fp2_mul(P.x, curve.A)
             P.x = fp2_neg(P.x)
-
-
 
 
     P.z = fp2_set_one()
@@ -131,14 +129,6 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
     Q.x = fp2_neg(Q.x)
     Q.z = fp2_set_one()
 
-    print_fp2("Q.x: ", Q.x)
-    print_fp2("Q.z: ", Q.z)
-
-    print_fp2("P.x: ", P.x)
-    print_fp2("P.z: ", P.z)
-
-    print_curve("curve_before_clear: ", curve)
-
     # clear cofactor
     P = clear_cofactor_for_maximal_even_order(P, curve, f)
     Q = clear_cofactor_for_maximal_even_order(Q, curve, f)
@@ -147,11 +137,7 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
     PQ2.Q = difference_point(P, Q, curve)
     PQ2.P = copy_point(P)
     PQ2.PmQ = copy_point(Q)
-
-    print_hex_point("pq2.p", PQ2.P)
-    print_hex_point("pq2.Q", PQ2.Q)
-    print_hex_point("pq2.PmQ", PQ2.PmQ)
-
+    
     return True, curve, PQ2
 
 
