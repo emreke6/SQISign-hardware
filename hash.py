@@ -135,8 +135,6 @@ def hash_to_challenge(
     scalar = bytearray(ctx.squeeze(hash_bytes))
     scalar = mask_scalar_top_bits(scalar, hash_bits, RADIX)
 
-    print("scalar first:", scalar.hex())
-
     # --------------------------------------------------------
     # Iterated hashing
     # --------------------------------------------------------

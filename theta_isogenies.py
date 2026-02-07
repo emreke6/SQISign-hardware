@@ -45,6 +45,29 @@ def print_curve(name: str ,curve: ECCurve):
     print("curve.normalized: ", curve.is_A24_computed_and_normalized)
 
 
+def fp2_sqrt_verify(a: Fp2):
+
+    tmp = a
+    t0 = fp2_copy(a)
+    t0 = fp2_sqrt_match_c(t0, q, True)
+    t1 = fp2_sqr(t0)
+
+    return t0, fp2_is_equal(a, t1)
+
+
+def ec_recover_y(Px: Fp2, curve: ECCurve):
+    #Recover y-coordinate of a point on the Montgomery curve y^2 = x^3 + Ax^2 + x
+    t0 = fp2_sqr(Px)
+    y = fp2_mul(t0, curve.A); #  Ax^2
+    y = fp2_add(y, Px);      #  Ax^2 + x
+    t0 = fp2_mul(t0, Px)
+    y = fp2_add(y, t0) #  x^3 + Ax^2 + x
+    # This is required, because we do not yet know that our curves are
+    # supersingular so our points live on the twist with B = 1.
+    y, ret = fp2_sqrt_verify(y)
+    return y , ret
+
+
 def lift_basis_normalized(B: ECBasis,
                           E: ECCurve) -> int:
     # Preconditions
@@ -62,9 +85,7 @@ def lift_basis_normalized(B: ECBasis,
     P.z = fp2_set_one()
 
     # Recover y-coordinate of P
-    assert P.x.re in dict_aa, "EC_RECOVER_ERROR"
-    # ret = ec_recover_y(P.y, P.x, E)
-    P.y = dict_aa[P.x.re]
+    P.y, ret = ec_recover_y(P.x, E)
 
     # --- Okeya–Sakurai algorithm to recover y(Q) ---
 
@@ -101,7 +122,7 @@ def lift_basis_normalized(B: ECBasis,
     Q.y = fp2_mul(Q.y, v1)
     Q.x = fp2_mul(Q.x, Q.z)
 
-    return P, Q
+    return P, Q, ret
 
 
 def lift_basis(B: ECBasis,
@@ -134,9 +155,9 @@ def lift_basis(B: ECBasis,
     E.A   = fp2_mul(E.A, inverses[1])
 
     # Lift the basis
-    P, Q = lift_basis_normalized(B, E)
+    P, Q, ret = lift_basis_normalized(B, E)
     
-    return P, Q, True
+    return P, Q, ret
 
 
 def jac_to_xz(xyP: jac_point_t):
@@ -521,7 +542,6 @@ def gluing_compute( E12: theta_couple_curve_t,
         return 0; # invalid input
 
     # Projective factor: Ax
-    # print_fp2("out.codomain.x bef_mul", out.codomain.x)
     out.codomain.x = fp2_mul(TT1.x, TT2.x)
     out.codomain.y = fp2_mul(TT1.y, TT2.x)
     out.codomain.z = fp2_mul(TT1.x, TT2.z)
@@ -741,16 +761,6 @@ def theta_isogeny_compute(
         TT1 = to_squared_theta(T1_8) # 2 add + 1 sub + 2 mul
         TT2 = to_squared_theta(T2_8) # 2 add + 1 sub + 2 mul
 
-    print_fp2("T1_8.x", T1_8.x)
-    print_fp2("T1_8.y", T1_8.y)
-    print_fp2("T1_8.z", T1_8.z)
-    print_fp2("T1_8.t", T1_8.y)
-
-    print_fp2("T2_8.x", T2_8.x)
-    print_fp2("T2_8.y", T2_8.y)
-    print_fp2("T2_8.z", T2_8.z)
-    print_fp2("T2_8.t", T2_8.y)
-
     if (
         fp2_is_zero(TT2.x)
         or fp2_is_zero(TT2.y)
@@ -759,7 +769,6 @@ def theta_isogeny_compute(
         or fp2_is_zero(TT1.x)
         or fp2_is_zero(TT1.y)
     ):
-        print("COMPUTE 2")
         return False  # corresponds to 'return 0;' in C
     
 
@@ -778,39 +787,30 @@ def theta_isogeny_compute(
     
 
     if verify:
-        print("COMPUTE 3")
         # (1) TT1.x * out.precomputation.x == TT1.y * out.precomputation.y
         t1 = fp2_mul(TT1.x, out.precomputation.x)
         t2 = fp2_mul(TT1.y, out.precomputation.y)
         if not fp2_is_equal(t1, t2):
             return False
         
-        print_fp2("TT1.z", TT1.z)
-        print_fp2("out.precomputation.z", out.precomputation.z)
-        print_fp2("TT1.t", TT1.t)
-        print_fp2("out.precomputation.t", out.precomputation.t)
-        print("COMPUTE 7")
         # (2) TT1.z * out.precomputation.z == TT1.t * out.precomputation.t
         t1 = fp2_mul(TT1.z, out.precomputation.z)
         t2 = fp2_mul(TT1.t, out.precomputation.t)
         if not fp2_is_equal(t1, t2):
             return False
 
-        print("COMPUTE 6")
         # (3) TT2.x * out.precomputation.x == TT2.z * out.precomputation.z
         t1 = fp2_mul(TT2.x, out.precomputation.x)
         t2 = fp2_mul(TT2.z, out.precomputation.z)
         if not fp2_is_equal(t1, t2):
             return False
 
-        print("COMPUTE 5")
         # (4) TT2.y * out.precomputation.y == TT2.t * out.precomputation.t
         t1 = fp2_mul(TT2.y, out.precomputation.y)
         t2 = fp2_mul(TT2.t, out.precomputation.t)
         if not fp2_is_equal(t1, t2):
             return False
 
-    print("COMPUTE 4")
     if hadamard_bool_2:
         out.codomain.null_point = hadamard_sqisign(out.codomain.null_point) # 4 add + 4 sub
 
@@ -940,8 +940,6 @@ def select_base_change_matrix( M1: basis_change_matrix_t, M2: basis_change_matri
     else:
         M <- FP2_CONSTANTS[M2]
     """
-    for i in range(5):
-        print_fp2("bne:", FP2_CONSTANTS[i])
     
     M = basis_change_matrix_init_zero()
     
@@ -1120,8 +1118,6 @@ def _theta_chain_compute_impl( n: int,
     #P12 = list([theta_couple_point_t for i in range()])
     theta = ThetaStructure()
 
-    print("_theta_chain_compute_impl: ")
-
     #lift the basis
     xyT1 = theta_couple_jac_point_t(P1=jac_point_t, P2=jac_point_t)
     xyT2 = theta_couple_jac_point_t(P1=jac_point_t, P2=jac_point_t)
@@ -1204,7 +1200,6 @@ def _theta_chain_compute_impl( n: int,
 
     # compute the gluing isogeny
     first_step, ret = gluing_compute(E12, jacQ1[current], jacQ2[current], verify)
-    print_fp2("first_step.codomain.x: ", first_step.codomain.x)
     if not ret:
         return False
 
@@ -1219,14 +1214,6 @@ def _theta_chain_compute_impl( n: int,
     #push kernel points through gluing isogeny
     for j in range(current):
         thetaQ1[j], thetaQ2[j] = gluing_eval_basis(jacQ1[j], jacQ2[j], first_step)
-        print_fp2("thetaQ1[j].x: ",  thetaQ1[j].x)
-        print_fp2("thetaQ1[j].y: ",  thetaQ1[j].y)
-        print_fp2("thetaQ1[j].z: ",  thetaQ1[j].z)
-        print_fp2("thetaQ1[j].t: ",  thetaQ1[j].t)
-        print_fp2("thetaQ2[j].x: ",  thetaQ2[j].x)
-        print_fp2("thetaQ2[j].y: ",  thetaQ2[j].y)
-        print_fp2("thetaQ2[j].z: ",  thetaQ2[j].z)
-        print_fp2("thetaQ2[j].t: ",  thetaQ2[j].t)
         todo[j] = todo[j] - 1
     
 
@@ -1237,9 +1224,7 @@ def _theta_chain_compute_impl( n: int,
     # set-up the theta_structure for the first codomain
     theta.null_point = first_step.codomain
     theta.precomputation = 0
-    print_fp2("theta.null_point.x bef", theta.null_point.x)
     theta = theta_precomputation(theta)
-    print_fp2("theta.null_point.x aft", theta.null_point.x)
 
     step = theta_isogeny_t()
 
@@ -1268,17 +1253,6 @@ def _theta_chain_compute_impl( n: int,
             step, ret = theta_isogeny_compute(theta, thetaQ1[current], thetaQ2[current], 1, 0, False)
         else:
             step, ret = theta_isogeny_compute(theta, thetaQ1[current], thetaQ2[current], 0, 1, verify)
-        
-        print_fp2("step.T1_8.x", step.T1_8.x)
-        print_fp2("step.T2_8.x", step.T2_8.y)
-
-        print_fp2("step.domain.null_point.x", step.domain.null_point.x)
-        print_fp2("step.domain.XYZ0", step.codomain.XYZ0)
-
-        print_fp2("step.codomain.null_point.x", step.codomain.null_point.x)
-        print_fp2("step.codomain.XYZ0", step.codomain.XYZ0)
-
-        print_fp2("step.precomputation.x", step.precomputation.x)
         
 
         if not ret:
@@ -1331,11 +1305,6 @@ def _theta_chain_compute_impl( n: int,
         split_in1 = -1
 
     is_split, last_step = splitting_compute(theta, split_in1 , randomize)
-
-    print(last_step)
-
-    print_fp2("last_step.M.m: ", last_step.M.m[0][0])
-    print_fp2("last_step.M.m: ", last_step.M.m[3][3])
 
     if not is_split:
         print("kernel did not generate an isogeny between elliptic products")

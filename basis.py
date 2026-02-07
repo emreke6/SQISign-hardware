@@ -135,8 +135,8 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
 
     # compute PmQ
     PQ2.Q = difference_point(P, Q, curve)
-    PQ2.P = copy_point(P)
-    PQ2.PmQ = copy_point(Q)
+    PQ2.P = copy_ec_point(P)
+    PQ2.PmQ = copy_ec_point(Q)
     
     return True, curve, PQ2
 

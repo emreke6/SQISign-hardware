@@ -17,6 +17,29 @@ dict2 = {
     0x123141: (Fp2(0,0), Fp2(0,0))
 }
 
+def print_hex_point(name, point):
+    print("---" + str(name) + "---")
+    print("A.re: ", hex(point.x.re))
+    print("A.im: ", hex(point.x.im))
+    print("Z.re: ", hex(point.z.re))
+    print("Z.im: ", hex(point.z.im))
+
+
+def print_fp2(name: str, A : Fp2):
+    print("---" + str(name) + "---")
+    print("A.re: ", hex(A.re))
+    print("A.im: ", hex(A.im))
+
+def print_curve(name: str ,curve: ECCurve):
+    print("---" + str(name) + "---")
+    print_fp2("curve.A: ",  curve.A)
+    print_fp2("curve.C: ",  curve.C)
+    if curve.A24 != None:
+        print_hex_point("curve.A24: ", curve.A24)
+    else:
+        print("curve.A24: ", None)
+    print("curve.normalized: ", curve.is_A24_computed_and_normalized)
+
 @dataclass
 class ECPoint:
     x: Fp2
@@ -56,6 +79,12 @@ class ECIsogEven:
     curve: ECCurve
     kernel: ECPoint
     length: int
+
+@dataclass
+class ECKPS2:
+    K: ECPoint = field(
+        default_factory=lambda: ECPoint(Fp2(0, 0), Fp2(0, 0))
+    )
 
 @dataclass
 class ECKPS4:
@@ -306,14 +335,14 @@ def copy_bases_to_kernel(B1: ECBasis, B2: ECBasis)->theta_kernel_couple_points_t
         T1m2 = theta_couple_point_t(P1=ec_point_init(), P2=ec_point_init)
     )
     #Copy the basis on E1 to (P, _) on T1, T2 and T1 - T2
-    ker.T1.P1 = copy_point(B1.P)
-    ker.T2.P1 = copy_point(B1.Q)
-    ker.T1m2.P1 = copy_point(B1.PmQ)
+    ker.T1.P1 = copy_ec_point(B1.P)
+    ker.T2.P1 = copy_ec_point(B1.Q)
+    ker.T1m2.P1 = copy_ec_point(B1.PmQ)
 
     #Copy the basis on E2 to (_, P) on T1, T2 and T1 - T2
-    ker.T1.P2 = copy_point(B2.P)
-    ker.T2.P2 = copy_point(B2.Q)
-    ker.T1m2.P2 = copy_point(B2.PmQ)
+    ker.T1.P2 = copy_ec_point(B2.P)
+    ker.T2.P2 = copy_ec_point(B2.Q)
+    ker.T1m2.P2 = copy_ec_point(B2.PmQ)
 
     return ker
 
@@ -333,14 +362,12 @@ def mp_compare_int(a: int, b: int) -> int:
 
 
 def A24_to_AC(E: ECCurve, A24: ECPoint)->ECCurve:
-    new_curve = ec_curve_init()
+    new_curve = ECCurve(A=E.A, C=E.C, A24=E.A24, is_A24_computed_and_normalized=E.is_A24_computed_and_normalized)
 
     aa1 = fp2_add(A24.x, A24.x)
     aa1 = fp2_sub(aa1, A24.z)
     aa1 = fp2_add(aa1, aa1)
     new_curve.A = aa1
-
-    new_curve.A24 = None
 
     new_curve.C = fp2_copy(A24.z)
 
@@ -444,7 +471,7 @@ def ec_normalize_curve_and_A24(E: ECCurve) -> ECCurve:
 def ec_normalize_curve(E: ECCurve) -> ECCurve:
     
     
-    assert E.C.re in dict1, "ERROR OF FP2_INV"
+    #assert E.C.re in dict1, "ERROR OF FP2_INV"
     C_inv = fp2_inv(E.C)
     #C_inv = dict1[E.C.re][1]
     A_new = fp2_mul(E.A, C_inv)
@@ -570,14 +597,7 @@ def difference_point(P, Q, curve):
     t1 = fp2_mul(Bxx, Bzz)
     t0 = fp2_sub(t0, t1)
     
-    #t0_new = fp2_sqrt(t0) # leave it for now
-    #print_fp2("aa: ", t0)
-    assert t0.re in dict1, "ERROR OF FP2_SQRT"
-    t0 = dict1[t0.re][1]
-    
-    
-    #assert t0 == t0_new
-
+    t0 =  fp2_sqrt_match_c(t0, q, True)
     X = fp2_add(Bxz, t0)
     Z = fp2_copy(Bzz)
 
@@ -610,8 +630,8 @@ def ec_basis_E0_2f(curve:ECCurve, f: int) -> ECBasis:
         Q=ECPoint(Fp2(0, 0), Fp2(0, 0)),
         PmQ=ECPoint(Fp2(0, 0), Fp2(0, 0)),
     )
-    PQ2.P = copy_point(P)
-    PQ2.Q = copy_point(Q)
+    PQ2.P = copy_ec_point(P)
+    PQ2.Q = copy_ec_point(Q)
     PQ2.PmQ = difference_point(P, Q, curve)
 
     return PQ2
@@ -688,11 +708,12 @@ def ec_ladder3pt(
         return False, P  # dummy
 
     X0 = ec_point_init()
-    X0 = copy_point(Q)
+    X0 = copy_ec_point(Q)
     X1 = ec_point_init()
-    X1 = copy_point(P)
+    X1 = copy_ec_point(P)
     X2 = ec_point_init()
-    X2 = copy_point(PQ)
+    X2 = copy_ec_point(PQ)
+
 
     # EXACT C LOOP: word-by-word, LSB-first
     for i in range(NWORDS_ORDER):
@@ -907,7 +928,7 @@ def xMUL(P: ECPoint, k: int, kbits: int, curve: ECCurve) -> ECPoint:
     # R0 = (1:0), R1 = P
     R0 = ec_point_init()       # returns identity point (1:0)
     R1 = ec_point_init() 
-    R1 = copy_point(P)         # functional copy
+    R1 = copy_ec_point(P)         # functional copy
 
     prevbit = 0
 
@@ -1039,7 +1060,7 @@ def ec_dbl_iter(res: ECPoint, n: int, P: ECPoint, curve: ECCurve):
 
     curve_new = curve
     if n == 0:
-        res = copy_point(P)
+        res = copy_ec_point(P)
         return res, curve_new
 
     # When the chain is long enough, normalize A24
@@ -1267,15 +1288,15 @@ def xDBLMUL( P: ECPoint, k: int, Q: ECPoint, l: int, PQ: ECPoint, kbits: int, cu
     DIFF1a = ec_point_init()
     DIFF1b = ec_point_init()
 
-    DIFF1a = copy_point(R1)
-    DIFF1b = copy_point(R2)
+    DIFF1a = copy_ec_point(R1)
+    DIFF1b = copy_ec_point(R2)
 
     R2 = xADD(R1, R2, PQ)
     if ec_has_zero_coordinate(R2):
         return 0
 
-    DIFF2a = copy_point(R2)
-    DIFF2b = copy_point(PQ)
+    DIFF2a = copy_ec_point(R2)
+    DIFF2b = copy_ec_point(PQ)
 
     A_is_zero = fp2_is_zero(curve.A)
 
@@ -1357,13 +1378,13 @@ def ec_biscalar_mul(scalarP: int,
         bQ = scalarQ & 1
 
         if bP == 0 and bQ == 0:
-            ec_point_init(res)        # (1:0)
+            res = ec_point_init()        # (1:0)
         elif bP == 1 and bQ == 0:
-            copy_point(res, PQ.P)
+            res = copy_ec_point(PQ.P)
         elif bP == 0 and bQ == 1:
-            copy_point(res, PQ.Q)
+            res = copy_ec_point(PQ.Q)
         elif bP == 1 and bQ == 1:
-            copy_point(res, PQ.PmQ)
+            res = copy_ec_point(PQ.PmQ)
         else:
             raise AssertionError("Impossible scalar combination")
 

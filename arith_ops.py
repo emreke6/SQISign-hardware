@@ -16,6 +16,7 @@ HASH_ITERATIONS = 64
 FP2_ENCODED_BYTES = 64
 
 
+
 R_INV = pow(R, -1, q)   # modular inverse
 
 # ---------- Base Fp2 ----------
@@ -104,7 +105,11 @@ def montgomery_sqisign(C, R, q):
     m_times_q_calc = (((m<<2) + m) << 248) - m # m*q^(-1) mod R
     u = C + m_times_q_calc
     u = u >> 256 # u/R
-    D = u
+    if u > q:
+        D = u - q
+    else:
+        D = u
+    #D = u
     return D
 
 def montgomery_sqisign_fp_sqr(C, R, q):
@@ -767,12 +772,17 @@ def mont_decode(x_mont: int, q: int, R_inv: int) -> int:
     # x_mont is x*R mod q  -> return x
     return (x_mont * R_inv) % q
 
+def mont_decode(x_mont: int, q: int, R_inv: int) -> int:
+    # x_mont is x*R mod q  -> return x
+    return (x_mont * R_inv) % q
+
 def fp_encode_lsb(x: int, q: int, R_inv: int, is_mont: bool) -> int:
     """
     Return the exact bit that C reads as tmp_bytes[0] & 1 after fp_encode().
     """
     xn = mont_decode(x, q, R_inv) if is_mont else (x % q)
     return xn & 1
+
 
 
 
@@ -787,7 +797,7 @@ def fp_sqrt_canonical(z: int, q: int, R_inv: int, is_mont: bool) -> int:
     return y
 
 
-def fp2_sqrt(a_in: Fp2, q: int, is_mont: bool = True) -> Fp2:
+def fp2_sqrt_match_c(a_in: Fp2, q: int, is_mont: bool = False) -> Fp2:
     """
     Matches the C fp2_sqrt() including:
       - canonical fp_sqrt() output (even low bit)
@@ -795,8 +805,11 @@ def fp2_sqrt(a_in: Fp2, q: int, is_mont: bool = True) -> Fp2:
       - final canonical sign rule on (re, im)
     Assumes q is an odd prime with q % 4 == 3 and i^2 = -1.
     """
-    a0 = a_in.re % q
-    a1 = a_in.im % q
+    a0 = a_in.re * R % q
+    a1 = a_in.im * R % q
+
+    a0 = a0 % q
+    a1 = a1 % q
 
     # x0 = delta = sqrt(a0^2 + a1^2) in F_q, canonicalized like gf5248_sqrt
     n = (a0 * a0 + a1 * a1) % q
@@ -841,6 +854,7 @@ def fp2_sqrt(a_in: Fp2, q: int, is_mont: bool = True) -> Fp2:
         im = (-im) % q
 
     return Fp2(re, im)
+
 
 
 

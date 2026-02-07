@@ -45,6 +45,55 @@ def xisog_4(B: ECPoint, P: ECPoint):
 
 
 
+def xisog_2(B_new: ECPoint,  P: ECPoint):
+    kps2 = ECKPS2()
+
+    B = ECPoint(Fp2(re=0, im=0), Fp2(re=0, im=0))
+    B.x = B_new.x
+    B.z = B_new.z
+
+    
+    B.x = fp2_sqr(P.x)
+    B.z = fp2_sqr(P.z)
+    B.x = fp2_sub(B.z,B.x)
+    kps2.K.x = fp2_add(P.x, P.z)
+    kps2.K.z = fp2_sub(P.x, P.z)
+
+    return kps2, B
+
+
+def xeval_2_one( Q: ECPoint, lenQ: int, kps: ECKPS2):
+    if lenQ == 1:
+        R = ECPoint(x=Q.x, z=Q.z)
+        t0 = fp2_add(Q.x, Q.z)
+        t1 = fp2_sub(Q.x, Q.z)
+        t2 = fp2_mul(kps.K.x, t1)
+        t1 = fp2_mul(kps.K.z, t0)
+        t0 = fp2_add(t2, t1)
+        t1 = fp2_sub(t2, t1)
+        R.x = fp2_mul(Q.x, t0)
+        R.z = fp2_mul(Q.z, t1)
+    
+    return R
+    
+
+def xeval_2( Q: list[ECPoint], lenQ: int, kps: ECKPS2):
+
+    R = [ECPoint(x=Q[i].x, z=Q[i].z) for i in range(lenQ)]
+    for j in range(lenQ):
+        t0 = fp2_add(Q[j].x, Q[j].z)
+        t1 = fp2_sub(Q[j].x, Q[j].z)
+        t2 = fp2_mul(kps.K.x, t1)
+        t1 = fp2_mul(kps.K.z, t0)
+        t0 = fp2_add(t2, t1)
+        t1 = fp2_sub(t2, t1)
+        R[j].x = fp2_mul(Q[j].x, t0)
+        R[j].z = fp2_mul(Q[j].z, t1)
+    
+    return R
+        
+
+
 def xeval_4( Q: list[ECPoint], lenQ: int, kps: ECKPS4):
 
     K = kps.K
