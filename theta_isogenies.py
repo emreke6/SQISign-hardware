@@ -2,22 +2,6 @@ from arith_ops import *
 from ec import *
 from basis import *
 
-dict_lift = {
-    0x00394892d1ce7d244ca0ed7c964b7454f17f3d2133dfd77cc65802708b257927: Fp2(re=0x027b1c5b4f9bd1dcab6d5725d1f71820c40740902a8a600e07b6e8470debc9c4,
-                                                                            im=0x004ba0a1faa48ca87f711d2d0dec457e3b6f4c9b7a82f9c6bc1f76df4e1779e1),
-    0x027c92b40b4dac7dd7b5cd6fd2c254c797662ca16557c5c2f6e1ac944cd08e47: Fp2(re=0x04a0e223212b80f117fbbdb5542952c462af936429c9ba2cc3fa9b69317ac5bd,
-                                                                            im=0x04b26a8c404835825e225afa61f7c3950f27c3f654e3cdded76111cfcf89b709),
-    0x032c706c5ffa2fc52a08f830498e8a95f4d773338f187bffc4471f4ea5c77c5b: Fp2(re=0x01f61cfa8f04eac4ef52429804013a553c88cd84ef4e2a14d67dfb2c4fd6403a,
-                                                                            im=0x03838b75eeeb9d59ca72f419b1f0a437f05ba54b21ebe1a5e905827bc2761ad6),
-    0x0100000000000000000000000000000000000000000000000000000000000033: Fp2(re=0x0100000000000000000000000000000000000000000000000000000000000033,
-                                                                            im=0x04ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff),                                                                                                                                 
-}
-
-dict_aa = {
-    0x2ec86c79489e6788eccc69324b37020f8659214de5ac1ecc488f96794e00f36: Fp2(re=0x03ce782cb15ee90d364a912c9a4c8ab002c544c60facee5589a02261f85edfba, im=0x079eddeec8a7fc63a2c73724f8067b81808ae83194fb88946f0f810c75aa131b),
-    0x30dbf1370e62897b1473ca9682ac82ad05bd2e0178392565b57c7c5dcc009b4: Fp2(re=0x0205e0f79845a48577b03dadd6c360a4a9f29ceb361c2ee61127e167cc43bc8a, im=0x041af03e22395a5f4c47d7c1d29b6bc2564126bcb6b878cfafaca481e1600866)
-}
-
 ENABLE_SIGN = True
 
 

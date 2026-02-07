@@ -104,20 +104,16 @@ def ec_curve_to_basis_2f_from_hint(PQ2: ECBasis, curve: ECCurve, f: int, hint: i
 
     if not hint_P:
         if not hint_A:
-            find_nA_x_coord(P.x, curve, 128)
+            P.x, hint = find_nA_x_coord(curve, 128)
         else:
-            find_nqr_factor(P.x, curve, 128)
+            P.x, hint = find_nqr_factor(curve, 128)
     else:
         if not hint_A:
             P.x = fp2_mul_small(curve.A, hint_P)
         else:
             P.x.re = fp_set_one()
             P.x.im = fp_set_small(hint_P)
-           
-            assert P.x.re in dict1, "ERROR OF FP2_INV" 
             P.x = fp2_inv(P.x)
-            #P.x = dict1[P.x.re][1]
-            
             P.x = fp2_mul(P.x, curve.A)
             P.x = fp2_neg(P.x)
 

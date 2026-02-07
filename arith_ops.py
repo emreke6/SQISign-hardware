@@ -1,5 +1,3 @@
-
-
 from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 
@@ -123,23 +121,23 @@ def montgomery_sqisign_fp_sqr(C, R, q):
     return D
 
 def modsub_sqisign(a, b, bool1):
-    c = a - b
+    c = (a - b) % q
 
-    c2 = c + q
+    # c2 = c + q
 
-    if c < 0:
-        r1 = c2
-    else:
-        r1 = c
+    # if c < 0:
+    #     r1 = c2
+    # else:
+    #     r1 = c
 
-    if not bool1:
-        if r1 < 0:
-            r1 = r1 + q
-        else:
-            r1 = r1
-    else:
-        r1 = a - b + 2 * q
-
+    # if not bool1:
+    #     if r1 < 0:
+    #         r1 = r1 + q
+    #     else:
+    #         r1 = r1
+    # else:
+    #     r1 = a - b + 2 * q
+    r1 = c
     return r1
 
 MASK64  = (1 << 64) - 1
@@ -167,35 +165,35 @@ def modadd_sqisign_exact(a, b, p):
     return c
 
 def modadd_sqisign(a, b, bool1):
-    c = a + b
-    prev = a + b
+    c = (a + b) % q
+    # prev = a + b
 
-    # First reduction pass
-    # overflow = (c >> 251) & 0x1F  # Check top bits (assuming 256-bit)
-    # mask = (-overflow) & ((1 << 256) - 1)  # Create mask
-    # print("mask: ", bin(mask), len(bin(mask)[2:]))
-    # print("mask & q = ", bin((mask & q)))
-    # c = (c - (mask & q)) & ((1 << 256) - 1)
+    # # First reduction pass
+    # # overflow = (c >> 251) & 0x1F  # Check top bits (assuming 256-bit)
+    # # mask = (-overflow) & ((1 << 256) - 1)  # Create mask
+    # # print("mask: ", bin(mask), len(bin(mask)[2:]))
+    # # print("mask & q = ", bin((mask & q)))
+    # # c = (c - (mask & q)) & ((1 << 256) - 1)
 
-    # # Second reduction pass (repeat)
-    # overflow = (c >> 251) & 0x1F
-    # mask = (-overflow) & ((1 << 256) - 1)
-    # c = (c - (mask & q)) & ((1 << 256) - 1)
+    # # # Second reduction pass (repeat)
+    # # overflow = (c >> 251) & 0x1F
+    # # mask = (-overflow) & ((1 << 256) - 1)
+    # # c = (c - (mask & q)) & ((1 << 256) - 1)
 
-    c_mask = c >> (192+59)
+    # c_mask = c >> (192+59)
 
-    if c_mask != 0:
-        c = c - q
+    # if c_mask != 0:
+    #     c = c - q
 
-    c_mask = c >> (192+59)
+    # c_mask = c >> (192+59)
 
-    if c_mask != 0:
-        c = c - q
+    # if c_mask != 0:
+    #     c = c - q
 
-    if bool1:
-        c = prev
-    else:
-        c = c
+    # if bool1:
+    #     c = prev
+    # else:
+    #     c = c
 
     return c
 
@@ -262,12 +260,12 @@ def fp2_add_one(y: Fp2) -> Fp2:
 
 
 def fp_neg(a: int) -> int:
-    res = 2*q - a
-    if res < pow(2,251):
-        return res
-    else:
-        return res - q
-
+    # res = 2*q - a
+    # if res < pow(2,251):
+    #     return res
+    # else:
+    #     return res - q
+    return (-a) % q
 
 def fp2_neg(y: Fp2) -> Fp2:
     x = Fp2(re=0, im=0)
@@ -415,37 +413,6 @@ def fp2_encode(a: "Fp2") -> bytes:
     return fp_encode(a.re) + fp_encode(a.im)
 
 
-
-# def fp2_inv(x):
-#     """
-#     Functional equivalent of C fp2_inv using fp_* operations.
-
-#     Computes:
-#         (a + i b)^(-1) = (a - i b) / (a^2 + b^2)
-#     """
-
-#     # t0 = a^2
-#     t0 = fp_mul(x.re, x.re)
-
-#     # t1 = b^2
-#     t1 = fp_mul(x.im, x.im)
-
-#     # t0 = a^2 + b^2
-#     t0 = fp_add(t0, t1)
-
-#     # t0 = 1 / (a^2 + b^2)
-#     t0 = fp_inv(t0)
-
-#     # re = a * t0
-#     re = fp_mul(x.re, t0)
-
-#     # im = -b * t0
-#     im = fp_mul(x.im, t0)
-#     im = fp_neg(im)
-
-#     return Fp2(re=re, im=im)
-
-from arith_ops import *
 
 def modinv(a, m):
     g, x, y = egcd(a, m)
@@ -595,178 +562,8 @@ def hadamard_sqisign(in1): # input is a ThetaPoint
     return out1
 
 
-
-# def mod_sqrt(a, p):
-#     """Tonelli-Shanks: returns x s.t. x^2 = a mod p, or None"""
-#     if a == 0:
-#         return 0
-#     if pow(a, (p - 1) // 2, p) != 1:
-#         return None  # no square root
-
-#     if p % 4 == 3:
-#         return pow(a, (p + 1) // 4, p)
-
-#     # Factor p-1 = q * 2^s
-#     q = p - 1
-#     s = 0
-#     while q % 2 == 0:
-#         q //= 2
-#         s += 1
-
-#     # Find z a quadratic non-residue
-#     z = 2
-#     while pow(z, (p - 1) // 2, p) != p - 1:
-#         z += 1
-
-#     c = pow(z, q, p)
-#     x = pow(a, (q + 1) // 2, p)
-#     t = pow(a, q, p)
-#     m = s
-
-#     while t != 1:
-#         i = 1
-#         temp = pow(t, 2, p)
-#         while temp != 1:
-#             temp = pow(temp, 2, p)
-#             i += 1
-
-#         b = pow(c, 2 ** (m - i - 1), p)
-#         x = (x * b) % p
-#         t = (t * b * b) % p
-#         c = (b * b) % p
-#         m = i
-
-#     return x
-
-# def fp_sqrt(a: Fp2)->Fp2:
-#     return mod_sqrt(a, q)
-
 def fp_sqr(x: Fp2)->Fp2:
     return fp_mul(x ,x)
-
-# def fp_exp3div4(a: int, p: int) -> int:
-#     return pow(a, (p - 3) // 4, p)
-
-# def gf5248_select(a0: int, a1: int, ctl: int) -> int:
-#     """
-#     ctl must be either 0 or 0xFFFFFFFF
-#     """
-#     return a0 if ctl == 0 else a1
-
-# def fp_select(a0: int, a1: int, ctl: int) -> int:
-#     return gf5248_select(a0, a1, ctl)
-
-# def gf5248_encode(a_mont: int) -> bytes:
-#     """
-#     a_mont is in Montgomery domain: a_mont = a * R mod Q
-#     Output matches C gf5248_encode exactly.
-#     """
-#     # Montgomery reduction: a = a_mont * R^{-1} mod Q
-#     a = (a_mont * R_INV) % q
-
-#     # Encode as 32-byte little-endian
-#     return a.to_bytes(32, byteorder="little")
-
-
-
-# def fp_encode(a: int) -> bytes:
-#     return gf5248_encode(a)
-
-# def fp2_sqrt(a: Fp2)->Fp2:
-#     """
-#     In-place square root in Fp2.
-#     a is an Fp2 object with fields a.re, a.im
-#     """
-
-#     # Temporary variables
-#     x0 = a.re
-#     x1 = a.im
-#     t0 = a.re
-#     t1 = a.im
-
-#     # x0 = delta = sqrt(a0^2 + a1^2)
-#     x0 = fp_sqr(a.re)
-#     x1 = fp_sqr(a.im)
-#     x0 = fp_add(x0, x1)
-#     x0 = fp_sqrt(x0)
-
-#     # If a1 == 0, force delta = a0
-#     x0 = fp_select(x0, a.re, fp_is_zero(a.im, q))
-
-#     # x0 = delta + a0, t0 = 2*x0
-#     x0 = fp_add(x0, a.re)
-#     t0 = fp_add(x0, x0)
-
-#     # x1 = t0^((p-3)//4)
-#     x1 = t0
-#     x1 = fp_exp3div4(x1, q)
-
-#     # x0 = x0 * x1
-#     # x1 = x1 * a1
-#     # t1 = (2*x0)^2
-#     x0 = fp_mul(x0, x1)
-#     x1 = fp_mul(x1, a.im)
-#     t1 = fp_add(x0, x0)
-#     t1 = fp_sqr(t1)
-
-#     # If t1 == t0:
-#     #   return x0 + x1*i
-#     # else:
-#     #   return x1 - x0*i
-#     t0_check = fp_sub(t0, t1)
-#     f = fp_is_zero(t0_check, q)
-
-#     t1_neg = fp_neg(x0)
-#     t0_tmp = x1
-
-#     t0 = fp_select(t0_tmp, x0, f)
-#     t1 = fp_select(t1_neg, x1, f)
-
-#     # Canonical sign fixing
-#     t0_is_zero = fp_is_zero(t0, q)
-
-#     t0_bytes = fp_encode(t0)
-#     t0_is_odd = - (t0_bytes[0] & 1)
-
-#     t1_bytes = fp_encode(t1)
-#     t1_is_odd = - (t1_bytes[0] & 1)
-
-#     negate_output = t0_is_odd | (t0_is_zero & t1_is_odd)
-
-#     # Conditional negation
-#     a_new = Fp2(re=0, im=0)
-#     a_new.re = fp_select(t0, fp_neg(t0), negate_output)
-#     a_new.im = fp_select(t1, fp_neg(t1), negate_output)
-
-#     return a_new
-
-
-# def fp2_sqr(y: Fp2) -> Fp2:
-#     """
-#     Computes x = y^2 in the quadratic extension field Fp2.
-
-#     Args:
-#         y (Fp2): input element (with fields re, im)
-#     Returns:
-#         Fp2: output squared element
-#     """
-
-#     # sum = y.re + y.im
-#     sum_ = fp_add_sqr(y.re, y.im)
-
-#     # diff = y.re - y.im
-#     diff = fp_sub_sqr(y.re, y.im)
-
-#     # x.im = 2 * (y.re * y.im)
-#     im_part = fp_add_sqr(y.re, y.re)  # multiply by 2 via addition
-#     im_part = fp_mul_fp_sqr(im_part, y.im)
-    
-
-#     # x.re = (y.re + y.im) * (y.re - y.im)
-#     re_part = fp_mul_fp_sqr(sum_, diff)
-
-#     # Return new Fp2 element
-#     return Fp2(re=re_part, im=im_part)
 
 def mont_decode(x_mont: int, q: int, R_inv: int) -> int:
     # x_mont is x*R mod q  -> return x

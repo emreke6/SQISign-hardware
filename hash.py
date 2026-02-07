@@ -1,8 +1,6 @@
 from arith_ops import *
 from ec import *
 from basis import *
-
-
 from Crypto.Hash import SHAKE256
 
 
